@@ -7,13 +7,12 @@ public class User {
 	private String lastName;
 	private String password;
 	private int optType;
+	private String message;
 
 	public User() {
-		super();
 	}
 
 	public User(int userId, String username, String firstName, String lastName, String password, int optType) {
-		super();
 		this.userId = userId;
 		this.username = username;
 		this.firstName = firstName;
@@ -70,4 +69,11 @@ public class User {
 		this.optType = optType;
 	}
 
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
 }
