@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 
 import pojo.User;
 import utility.CardValidation;
@@ -79,16 +80,48 @@ public class Server {
 				Object object = inputFromClient.readObject();
 				if (object instanceof User) {
 					User user = (User) object;
+					PreparedStatement preparedStatement = null;
+					int count;
 					switch (user.getOptType()) {
 					case 1:
+						preparedStatement = conn.prepareStatement(
+								"INSERT INTO USER(username, firstname, lastname, password) " + "VALUES(?,?,?,?)");
+						preparedStatement.setString(1, user.getUsername());
+						preparedStatement.setString(2, user.getFirstName());
+						preparedStatement.setString(3, user.getLastName());
+						preparedStatement.setString(4, hashCode.getHashCode(user.getPassword()));
+						count = preparedStatement.executeUpdate();
+						if (count == 1) {
+							user.setMessage("Insert Successfully");
+							object = user;
+						} else {
+							user.setMessage("Unable to insert.");
+							user.setOptType(-1);
+							object = user;
+						}
 						break;
 
 					case 2:
+						preparedStatement = conn
+								.prepareStatement("SELECT * FROM USER WHERE username = ? AND password = ?");
+						preparedStatement.setString(1, user.getUsername());
+						preparedStatement.setString(2, hashCode.getHashCode(user.getPassword()));
+						count = preparedStatement.executeUpdate();
+						if (count == 1) {
+							user.setMessage("user found");
+							object = user;
+						} else {
+							user.setMessage("Invalid credentails.");
+							user.setOptType(-1);
+							object = user;
+						}
 						break;
 					}
 				}
+
+				outputToClient.writeObject(object);
 			} catch (final Exception e) {
-				// TODO: handle exception
+				e.printStackTrace();
 			}
 		}
 	}// end of class Runnable
