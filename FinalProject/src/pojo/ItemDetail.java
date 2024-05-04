@@ -2,22 +2,23 @@ package pojo;
 
 import utility.Constants.MenuType;
 
-public class Menu extends BaseAttributes {
-	private int menuId;
+public class ItemDetail extends BaseAttributes {
+	private int itemId;
 	private String name;
 	private MenuType menuType;
 	private String description;
+	private float price;
 
-	public Menu() {
+	public ItemDetail() {
 		super();
 	}
 
-	public int getMenuId() {
-		return menuId;
+	public int getItemId() {
+		return itemId;
 	}
 
-	public void setMenuId(int menuId) {
-		this.menuId = menuId;
+	public void setItemId(int menuId) {
+		this.itemId = menuId;
 	}
 
 	public String getName() {
@@ -42,6 +43,14 @@ public class Menu extends BaseAttributes {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public float getPrice() {
+		return price;
+	}
+
+	public void setPrice(float price) {
+		this.price = price;
 	}
 
 }
