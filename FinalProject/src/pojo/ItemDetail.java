@@ -13,6 +13,15 @@ public class ItemDetail extends BaseAttributes {
 		super();
 	}
 
+	public ItemDetail(int id, String name, MenuType menutype, String desc, float price) {
+		super();
+		this.itemId = id;
+		this.name = name;
+		this.description = desc;
+		this.price = price;
+		this.menuType = menutype;
+	}
+	
 	public int getItemId() {
 		return itemId;
 	}

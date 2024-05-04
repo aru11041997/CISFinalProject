@@ -15,21 +15,21 @@ import javax.swing.JTextField;
 public class HomeScreen extends JFrame implements ActionListener {
 
 	// login attributes
-	JLabel lblUsername;
-	JLabel lblPassword;
-	JLabel lblUserType;
-	JLabel lblSignUpText;
-	JTextField txtUsername;
-	JTextField txtPassword;
+	private JLabel lblUsername;
+	private JLabel lblPassword;
+	private JLabel lblUserType;
+	private JLabel lblSignUpText;
+	private JTextField txtUsername;
+	private JTextField txtPassword;
 
-	JComboBox cmbUserType;
+//	JComboBox cmbUserType;
 	
-	JButton btnLogin;
-	JButton btnSignUp;
+	private JButton btnLogin;
+	private JButton btnSignUp;
 	
-	JButton btnChefScreen;
-	JButton btnCustomerScreen;
-	JButton btnDbaScreen;
+	private JButton btnChefScreen;
+	private JButton btnCustomerScreen;
+	private JButton btnDbaScreen;
 
 	public HomeScreen() {
 
@@ -61,9 +61,9 @@ public class HomeScreen extends JFrame implements ActionListener {
 		this.txtUsername = new JTextField(10);
 		this.txtPassword = new JTextField(10);
 		
-		String userTypes[] = {"","Customer","Chef", "DBA"};
-		this.cmbUserType = new JComboBox<String>(userTypes);
-		this.cmbUserType.setSelectedIndex(1);
+//		String userTypes[] = {"","Customer","Chef", "DBA"};
+//		this.cmbUserType = new JComboBox<String>(userTypes);
+//		this.cmbUserType.setSelectedIndex(1);
 		
 		this.btnChefScreen = new JButton("Chef Screen");
 		this.btnCustomerScreen = new JButton("Customer Screen");
@@ -91,18 +91,18 @@ public class HomeScreen extends JFrame implements ActionListener {
 		row2.add(this.lblPassword);
 		row2.add(this.txtPassword);
 		
-		row3.add(this.lblUserType);
-		row3.add(this.cmbUserType);
+//		row3.add(this.lblUserType);
+//		row3.add(this.cmbUserType);
 		
 		row4.add(this.btnLogin);
 		
 		row5.add(this.lblSignUpText);
 		row5.add(this.btnSignUp);
 		
-		center.setLayout(new GridLayout(5,1));
+		center.setLayout(new GridLayout(4,1));
 		center.add(row1);
 		center.add(row2);
-		center.add(row3);
+//		center.add(row3);
 		center.add(row4);
 		center.add(row5);
 		
@@ -126,17 +126,21 @@ public class HomeScreen extends JFrame implements ActionListener {
 		if(e.getSource()==this.btnChefScreen) {
 			 ChefScreen chefScreen = new ChefScreen();
              chefScreen.setVisible(true);
-             // Close the current HomeScreen
-             dispose();
+             
 		}else if(e.getSource() == this.btnCustomerScreen) {
 			
 		}else if(e.getSource() == this.btnDbaScreen) {
+			DbaScreen dbaScreen = new DbaScreen();
+			dbaScreen.setVisible(true);
 			
 		}else if(e.getSource() == this.btnLogin) {
 			
 		}else if(e.getSource() == this.btnSignUp) {
+			SignUpScreen signup = new SignUpScreen();
+			signup.setVisible(true);
 			
 		}
+		dispose();
 			
 	}
 

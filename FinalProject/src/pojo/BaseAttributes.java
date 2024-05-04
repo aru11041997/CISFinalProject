@@ -7,6 +7,10 @@ public class BaseAttributes {
 	public BaseAttributes() {
 		super();
 	}
+	public BaseAttributes(int op, String msg) {
+		this.optType = op;
+		this.message = msg;
+	}
 
 	public int getOptType() {
 		return optType;
