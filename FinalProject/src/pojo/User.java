@@ -1,24 +1,26 @@
 package pojo;
 
-public class User {
+import utility.Constants.UserType;
+
+public class User extends BaseAttributes {
 	private int userId;
 	private String username;
 	private String firstName;
 	private String lastName;
 	private String password;
-	private int optType;
-	private String message;
+	private UserType userType;
 
 	public User() {
+		super();
 	}
 
-	public User(int userId, String username, String firstName, String lastName, String password, int optType) {
+	public User(int userId, String username, String firstName, String lastName, String password) {
+		super();
 		this.userId = userId;
 		this.username = username;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.password = password;
-		this.optType = optType;
 	}
 
 	public int getUserId() {
@@ -61,19 +63,11 @@ public class User {
 		this.password = password;
 	}
 
-	public int getOptType() {
-		return optType;
+	public void setUserType(UserType userType) {
+		this.userType = userType;
 	}
 
-	public void setOptType(int optType) {
-		this.optType = optType;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
+	public UserType getUserType() {
+		return userType;
 	}
 }
