@@ -11,7 +11,9 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import pojo.Menu;
+import doa.ItemDetailDoa;
+import doa.UserDoa;
+import pojo.ItemDetail;
 import pojo.User;
 import utility.CardValidation;
 import utility.Constants.MenuType;
@@ -24,11 +26,17 @@ public class Server {
 	private HashCode hashCode;
 	private CardValidation cardValidation;
 	private ServerSocket serverSocket;
+	private UserDoa userDoa;
+	private ItemDetailDoa itemDetailDoa;
 
 	Server(int port) {
 		this.port = port;
 		hashCode = new HashCode();
 		cardValidation = new CardValidation();
+		userDoa = new UserDoa();
+		itemDetailDoa = new ItemDetailDoa();
+
+		//
 		initialize();
 	}
 
@@ -86,148 +94,39 @@ public class Server {
 				Object object = inputFromClient.readObject();
 				if (object instanceof User) {
 					User user = (User) object;
-					PreparedStatement preparedStatement = null;
-					ResultSet resultSet = null;
-					int count;
 					switch (user.getOptType()) {
 					case 1:
-						preparedStatement = conn
-								.prepareStatement("INSERT INTO USER(username, firstname, lastname, password, usertype) "
-										+ "VALUES(?,?,?,?,?)");
-						preparedStatement.setString(1, user.getUsername());
-						preparedStatement.setString(2, user.getFirstName());
-						preparedStatement.setString(3, user.getLastName());
-						preparedStatement.setString(4, hashCode.getHashCode(user.getPassword()));
-						preparedStatement.setString(5, user.getUserType().toString());
-						count = preparedStatement.executeUpdate();
-						if (count == 1) {
-							user.setMessage("Insert Successfully");
-							object = user;
-						} else {
-							user.setMessage("Unable to insert.");
-							user.setOptType(-1);
-							object = user;
-						}
-						preparedStatement.close();
+						user = userDoa.registration(conn, user, hashCode);
+						object = user;
 						break;
 
 					case 2:
-						preparedStatement = conn
-								.prepareStatement("SELECT * FROM USER WHERE username = ? AND password = ?");
-						preparedStatement.setString(1, user.getUsername());
-						preparedStatement.setString(2, hashCode.getHashCode(user.getPassword()));
-						resultSet = preparedStatement.executeQuery();
-						if (resultSet.next()) {
-							user.setFirstName(resultSet.getString("firstname"));
-							user.setLastName(resultSet.getString("lastname"));
-							user.setUserId(resultSet.getInt("userid"));
-
-							String userType = resultSet.getString("usertype");
-							UserType type = null;
-							if (userType.equals("ADMIN"))
-								type = UserType.ADMIN;
-							else if (userType.equals("USER"))
-								type = UserType.USER;
-							else if (userType.equals("CHEF"))
-								type = UserType.CHEF;
-
-							user.setUserType(type);
-							user.setMessage("user found");
-							object = user;
-						} else {
-							user.setMessage("Invalid credentails.");
-							user.setOptType(-1);
-							object = user;
-						}
-						preparedStatement.close();
+						user = userDoa.login(conn, user, hashCode);
+						object = user;
 						break;
 					}
 				}
 
-				if (object instanceof Menu) {
-					Menu menu = (Menu) object;
-					PreparedStatement preparedStatement = null;
-					ResultSet resultSet = null;
-					int count;
+				if (object instanceof ItemDetail) {
+					ItemDetail menu = (ItemDetail) object;
 					switch (menu.getOptType()) {
 					case 1:
-						preparedStatement = conn.prepareStatement("SELECT * FROM menu");
-						resultSet = preparedStatement.executeQuery();
-						List<Menu> menus = new ArrayList<>();
-						while (resultSet.next()) {
-							Menu menu2 = new Menu();
-							menu2.setMenuId(resultSet.getInt("menuid"));
-							menu2.setName(resultSet.getString("name"));
-							String menuType = resultSet.getString("type");
-
-							MenuType type = null;
-							if (menuType.equals("VEG"))
-								type = MenuType.VEG;
-							else if (menuType.equals("NONVEG"))
-								type = MenuType.NONVEG;
-							else if (menuType.equals("VEGAN"))
-								type = MenuType.VEGAN;
-							menu2.setMenuType(type);
-
-							menu2.setDescription(resultSet.getString("description"));
-							menus.add(menu2);
-						}
+						List<ItemDetail> menus = itemDetailDoa.getAllItem(conn, menu);
 						object = menus;
-						preparedStatement.close();
 						break;
 
 					case 2:
-						preparedStatement = conn
-								.prepareStatement("INSERT INTO MENU(name, type, description) VALUES(?,?,?)");
-						preparedStatement.setString(1, menu.getName());
-						preparedStatement.setString(2, menu.getMenuType().toString());
-						preparedStatement.setString(3, menu.getDescription());
-						count = preparedStatement.executeUpdate();
-						if (count == 1) {
-							menu.setMessage("Insert Successfully");
-							object = menu;
-						} else {
-							menu.setMessage("Unable to insert.");
-							menu.setOptType(-2);
-							object = menu;
-						}
-						preparedStatement.close();
+						menu = itemDetailDoa.addItem(conn, menu);
 						object = menu;
 						break;
 
 					case 3:
-						preparedStatement = conn.prepareStatement(
-								"UPDATE MENU SET name = ?, type = ?, description = ? WHERE menuid = ?");
-						preparedStatement.setString(1, menu.getName());
-						preparedStatement.setString(2, menu.getMenuType().toString());
-						preparedStatement.setString(3, menu.getDescription());
-						preparedStatement.setInt(4, menu.getMenuId());
-						count = preparedStatement.executeUpdate();
-						if (count == 1) {
-							menu.setMessage("Update Successfully");
-							object = menu;
-						} else {
-							menu.setMessage("Unable to update.");
-							menu.setOptType(-3);
-							object = menu;
-						}
-						preparedStatement.close();
+						menu = itemDetailDoa.updateItem(conn, menu);
 						object = menu;
 						break;
 
 					case 4:
-						preparedStatement = conn.prepareStatement("DELETE FROM MENU WHERE menuid = ?");
-						preparedStatement.setInt(1, menu.getMenuId());
-						count = preparedStatement.executeUpdate();
-						if (count == 1) {
-							menu.setMessage("Delet Successfully");
-							object = menu;
-						} else {
-							menu.setMessage("Unable to delete.");
-							menu.setOptType(-4);
-							object = menu;
-						}
-						preparedStatement.close();
+						menu = itemDetailDoa.deleteItem(conn, menu);
 						object = menu;
 						break;
 					}
