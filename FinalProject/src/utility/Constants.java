@@ -8,4 +8,8 @@ public class Constants {
 	public enum MenuType {
 		VEG, NONVEG, VEGAN
 	}
+
+	public enum OrderStatus {
+		PLACED, RECEIVED, INPROCESS, COMPLETED
+	}
 }

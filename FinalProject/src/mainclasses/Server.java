@@ -14,6 +14,7 @@ import java.util.List;
 import doa.ItemDetailDoa;
 import doa.UserDoa;
 import pojo.ItemDetail;
+import pojo.Order;
 import pojo.User;
 import utility.CardValidation;
 import utility.Constants.MenuType;
@@ -129,6 +130,15 @@ public class Server {
 						menu = itemDetailDoa.deleteItem(conn, menu);
 						object = menu;
 						break;
+					}
+				}
+
+				if (object instanceof Order) {
+					Order order = (Order) object;
+					switch (order.getOptType()) {
+					case 1:
+						break;
+
 					}
 				}
 
