@@ -8,6 +8,7 @@ public class ItemDetail extends BaseAttributes {
 	private MenuType menuType;
 	private String description;
 	private float price;
+	private int quantity;
 
 	public ItemDetail() {
 		super();
@@ -62,4 +63,11 @@ public class ItemDetail extends BaseAttributes {
 		this.price = price;
 	}
 
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
 }
