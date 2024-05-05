@@ -76,7 +76,7 @@ public class ItemDetail extends BaseAttributes implements Serializable{
 	
 	@Override
 	public String toString() {
-		return "Name: "+ this.name + "; Type: " + this.menuType.toString() + "; Price: " + this.price + "; Description: " + this.description + this.getOptType() + this.getMessage();
+		return "ItemID: " + this.itemId + "; Name: "+ this.name + "; Type: " + this.menuType.toString() + "; Price: " + this.price + "; Quantity: " + this.quantity + "; Description: " + this.description + this.getOptType() + this.getMessage();
 		
 	}
 }

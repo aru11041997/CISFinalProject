@@ -16,12 +16,7 @@ public class Client {
 	ObjectOutputStream clientOutputStream;
 	ObjectInputStream clientInputStream;
 	
-	
-	
-//	Client() {
-//		System.out.println("client constructor");
-//	}
-	
+
 	public Client(int port, String hostname) {
 		this.port = port;
 		this.hostName = hostname;

@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -51,6 +52,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 
 	private JButton btnAddItem;
 	private JButton btnProceedToPayment;
+	private JButton btnDeleteSelectedItem;
 
 	private double totalAmount;
 
@@ -59,11 +61,13 @@ public class CustomerScreen extends JFrame implements ActionListener {
 	private JTable menuTable;
 	private JTable selectedItemTable;
 
-	ArrayList<ItemDetail> menuItems;
+	List<ItemDetail> menuItems;
+	List<ItemDetail> selectedItems;
 
 	Client client;
+	ItemDetail itemDetail;
 
-	public CustomerScreen( Client client) {
+	public CustomerScreen(Client client) {
 
 		this.client = client;
 
@@ -72,6 +76,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 
 		this.btnAddItem.addActionListener(this);
 		this.btnProceedToPayment.addActionListener(this);
+		this.btnDeleteSelectedItem.addActionListener(this);
 
 		this.setTitle("Customer Screen - Place Order");
 		this.setSize(1200, 600);
@@ -80,6 +85,8 @@ public class CustomerScreen extends JFrame implements ActionListener {
 
 		displayMenu();
 
+		this.selectedItems = new ArrayList<ItemDetail>();
+		
 	}
 
 	public void initializeUIComponents() {
@@ -107,7 +114,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		// this.selectedItemsListModel = new DefaultListModel<>();
 		// this.selectedItemsList = new JList<>(this.selectedItemsListModel);
 
-		this.selectedItemTableModel = new DefaultTableModel(new Object[] { "Item", "Quantity" }, 0);
+		this.selectedItemTableModel = new DefaultTableModel(new Object[] { "Item", "Quantity","Price Per Unit"}, 0);
 		this.selectedItemTable = new JTable(this.selectedItemTableModel);
 
 		this.selectedItemsScrollPane = new JScrollPane(this.selectedItemTable);
@@ -121,9 +128,11 @@ public class CustomerScreen extends JFrame implements ActionListener {
 
 		this.btnAddItem = new JButton("Add Item");
 		this.btnProceedToPayment = new JButton("Proceed to Payment");
+		this.btnDeleteSelectedItem = new JButton("Remove Item");
 
 	}
 
+	
 	public void doTheLayout() {
 		JPanel menuPanel = new JPanel();
 		JPanel selectedItemsPanel = new JPanel();
@@ -134,6 +143,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		JPanel menuRow3 = new JPanel();
 		JPanel itemRow1 = new JPanel();
 		JPanel itemRow2 = new JPanel();
+		JPanel itemRow2Inner = new JPanel();
 
 		menuPanel.setLayout(new BorderLayout());
 //		menuPanel.setBorder(BorderFactory.createTitledBorder("Menu"));
@@ -158,12 +168,14 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		// menuPanel.add(menuRow3);
 
 		itemRow1.add(this.selectedItemsScrollPane);
-
+		itemRow2Inner.add(this.btnDeleteSelectedItem);
+		itemRow2Inner.add(this.btnProceedToPayment);
 		itemRow2.setLayout(new GridLayout(2, 1));
 		itemRow2.add(this.lblTotal);
-		itemRow2.add(this.btnProceedToPayment);
+		itemRow2.add(itemRow2Inner);
 
 		selectedItemsPanel.setLayout(new BorderLayout());
+		selectedItemsPanel.setBorder(BorderFactory.createTitledBorder("Cart"));
 		selectedItemsPanel.add(new JPanel());
 		selectedItemsPanel.add(itemRow1, BorderLayout.CENTER);
 		selectedItemsPanel.add(itemRow2, BorderLayout.SOUTH);
@@ -199,38 +211,83 @@ public class CustomerScreen extends JFrame implements ActionListener {
 			addItem();
 		} else if (e.getSource() == this.btnProceedToPayment) {
 			proceedToPayment();
+		} else if (e.getSource() == this.btnDeleteSelectedItem) {
+			deleteSelectedItemFromCart();
+		}
+	}
+
+	public void deleteSelectedItemFromCart() {
+
+		System.out.println("deleteSelectedItemFromCart");
+
+		int selectedItemRow = this.selectedItemTable.getSelectedRow();
+		System.out.println("selectedItemRow = " +selectedItemRow);
+		if (selectedItemRow != -1) {
+			
+			int numColumns = this.selectedItemTableModel.getColumnCount();
+			Object[] rowData = new Object[numColumns];
+			for (int i = 0; i < numColumns; i++) {
+			    rowData[i] = this.selectedItemTableModel.getValueAt(selectedItemRow, i);
+			}
+			
+			String name = (String)rowData[0];
+			int quantity = (int)rowData[1];
+			float pricePerUnit = (float)rowData[2];
+			
+			this.selectedItemTableModel.removeRow(selectedItemRow);
+			this.totalAmount -= (quantity * pricePerUnit);
+			this.lblTotal.setText("Total: $" + totalAmount);
+			
+			deleteSelectedItemFromList(name);
+		}else {
+			JOptionPane.showMessageDialog(this, "Please select an item from the cart to remove.");
+		}
+		
+	}
+	
+	public void deleteSelectedItemFromList(String name) {		
+		for(int i=0;i<this.selectedItems.size();i++) {
+	
+			if(this.selectedItems.get(i).getName().compareTo(name)==0) {
+				this.selectedItems.remove(i);
+				break;
+			}		
+		}
+		
+		for(int i=0;i<this.selectedItems.size();i++) {
+			
+			System.out.println(this.selectedItems.get(i).toString());	
 		}
 	}
 
 	public void addItem() {
-//		ItemDetail selectedItem = menuList.getSelectedValue();
-//		
-//        if (selectedItem != null) {
-//        	System.out.println("selected item =" + selectedItem.getName());
-//            int quantity = Integer.parseInt(this.txtQuantity.getText());
-//            selectedItem.setQuantity(quantity);
-//            this.selectedItemsListModel.addElement(selectedItem);
-//            this.totalAmount += (selectedItem.getPrice() * quantity);
-//            this.lblTotal.setText("Total: $" + totalAmount);
-//        } else {
-//            JOptionPane.showMessageDialog(this, "Please select an item from the menu.");
-//        }
-//        
 
 		int selectedItemRow = this.menuTable.getSelectedRow();
 		if (selectedItemRow != -1) {
 			ItemDetail selectedItem = this.menuItems.get(selectedItemRow);
 			if (selectedItem != null) {
+				
+				
+				
 				System.out.println("selected item =" + selectedItem.getName());
 				int quantity = Integer.parseInt(this.txtQuantity.getText());
-
-				Object[] rowData = new Object[2];
+				selectedItem.setQuantity(quantity);
+				
+				Object[] rowData = new Object[3];
 				rowData[0] = selectedItem.getName();
 				rowData[1] = quantity;
+				rowData[2] = selectedItem.getPrice();
 
 				this.selectedItemTableModel.addRow(rowData);
 				this.totalAmount += (selectedItem.getPrice() * quantity);
 				this.lblTotal.setText("Total: $" + totalAmount);
+				
+				System.out.println("selected item === " + selectedItem.toString());
+				this.selectedItems.add(selectedItem);
+				
+				for(int i=0;i<this.selectedItems.size();i++) {				
+					System.out.println(this.selectedItems.get(i).toString());	
+				}
 			}
 		} else {
 			JOptionPane.showMessageDialog(this, "Please select an item from the menu.");
@@ -244,26 +301,9 @@ public class CustomerScreen extends JFrame implements ActionListener {
 	}
 
 	public void displayMenu() {
-		this.menuItems = new ArrayList<>();
+		// this.menuItems = new ArrayList<>();
 
-		menuItems.add(new ItemDetail(1, "Pepperoni Pizza", MenuType.NONVEG,
-				"This is the 1st menu option - Pepporoni pizza of non veg category", 10.0f, 1, ""));
-		menuItems.add(new ItemDetail(2, "Veg Extravaganza Pizza", MenuType.VEG,
-				"This is the 2nd menu option - Veg Extravaganza of veg category", 5.0f, 1, ""));
-		menuItems.add(new ItemDetail(3, "Cheese Pizza", MenuType.VEG,
-				"This is the 3rd menu option - Margerita pizza of Veg category", 15.0f, 1, ""));
-		menuItems.add(new ItemDetail(4, "Paneer Pizza", MenuType.VEGAN,
-				"This is the 4th menu option - Paneer pizza of veg category", 18.0f, 1, ""));
-		menuItems.add(new ItemDetail(4, "Paneer Pizza", MenuType.VEGAN,
-				"This is the 4th menu option - Paneer pizza of veg category", 18.0f, 1, ""));
-		menuItems.add(new ItemDetail(4, "Paneer Pizza", MenuType.VEGAN,
-				"This is the 4th menu option - Paneer pizza of veg category", 18.0f, 1, ""));
-		menuItems.add(new ItemDetail(3, "Cheese Pizza", MenuType.VEG,
-				"This is the 3rd menu option - Margerita pizza of Veg category", 15.0f, 1, ""));
-		menuItems.add(new ItemDetail(3, "Cheese Pizza", MenuType.VEG,
-				"This is the 3rd menu option - Margerita pizza of Veg category", 15.0f, 1, ""));
-		menuItems.add(new ItemDetail(3, "Cheese Pizza", MenuType.VEG,
-				"This is the 3rd menu option - Margerita pizza of Veg category", 15.0f, 1, ""));
+		this.menuItems = getMenuItems();
 
 		for (ItemDetail item : menuItems) {
 
@@ -277,6 +317,17 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		}
 
 	}
+
+	@SuppressWarnings("unchecked")
+	public List<ItemDetail> getMenuItems() {
+
+		List<ItemDetail> items = new ArrayList<>();
+		this.itemDetail = new ItemDetail(0, "", null, "", 0.0f, 1, "");
+		items = (List<ItemDetail>) this.client.performAction(this.itemDetail);
+		System.out.println("items list size = " + items.size());
+		return items;
+	}
+
 }
 
 class MultiLineTableCellRenderer extends JTextArea implements TableCellRenderer {
