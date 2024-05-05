@@ -50,7 +50,7 @@ public class Server {
 			System.out.println("Server started. Listening on port " + port);
 
 			// Connect to your database using your credentials
-			final String url = "jdbc:mysql://BusCISMySQL01:3306/finalProject"; // team db team29DB
+			final String url = "jdbc:mysql://BusCISMySQL01:3306/c836817374db"; // team db team29DB
 			final String username = "C836817374";
 			final String password = "c611c!17374";
 			conn = DriverManager.getConnection(url, username, password);
