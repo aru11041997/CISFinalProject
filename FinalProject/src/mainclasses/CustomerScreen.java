@@ -32,6 +32,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import pojo.ItemDetail;
+import pojo.Order;
+import utility.CardValidation;
 import utility.Constants.MenuType;
 
 public class CustomerScreen extends JFrame implements ActionListener {
@@ -53,6 +55,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 	private JButton btnAddItem;
 	private JButton btnProceedToPayment;
 	private JButton btnDeleteSelectedItem;
+	private JButton btnPlaceOrder;
 
 	private double totalAmount;
 
@@ -63,9 +66,13 @@ public class CustomerScreen extends JFrame implements ActionListener {
 
 	List<ItemDetail> menuItems;
 	List<ItemDetail> selectedItems;
+	Order order;
+	String cardNumber;
+	ItemDetail itemDetail;
+	CardValidation cardValidation;
 
 	Client client;
-	ItemDetail itemDetail;
+	
 
 	public CustomerScreen(Client client) {
 
@@ -77,6 +84,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		this.btnAddItem.addActionListener(this);
 		this.btnProceedToPayment.addActionListener(this);
 		this.btnDeleteSelectedItem.addActionListener(this);
+		this.btnPlaceOrder.addActionListener(this);
 
 		this.setTitle("Customer Screen - Place Order");
 		this.setSize(1200, 600);
@@ -129,6 +137,8 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		this.btnAddItem = new JButton("Add Item");
 		this.btnProceedToPayment = new JButton("Proceed to Payment");
 		this.btnDeleteSelectedItem = new JButton("Remove Item");
+		this.btnPlaceOrder = new JButton("Place Order");
+		this.btnPlaceOrder.setVisible(false);
 
 	}
 
@@ -170,6 +180,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		itemRow1.add(this.selectedItemsScrollPane);
 		itemRow2Inner.add(this.btnDeleteSelectedItem);
 		itemRow2Inner.add(this.btnProceedToPayment);
+		itemRow2Inner.add(this.btnPlaceOrder);
 		itemRow2.setLayout(new GridLayout(2, 1));
 		itemRow2.add(this.lblTotal);
 		itemRow2.add(itemRow2Inner);
@@ -213,7 +224,10 @@ public class CustomerScreen extends JFrame implements ActionListener {
 			proceedToPayment();
 		} else if (e.getSource() == this.btnDeleteSelectedItem) {
 			deleteSelectedItemFromCart();
-		}
+		}else if (e.getSource() == this.btnPlaceOrder) {
+			placeOrder();
+		}  
+		
 	}
 
 	public void deleteSelectedItemFromCart() {
@@ -296,8 +310,35 @@ public class CustomerScreen extends JFrame implements ActionListener {
 	}
 
 	public void proceedToPayment() {
-//		PaymentScreen paymentScreen = new PaymentScreen(totalAmount);
-//        paymentScreen.setVisible(true);
+		boolean isValidCreditCard = false;
+		while (!isValidCreditCard) {
+			String creditCardNumber = JOptionPane.showInputDialog(this, "Please enter your credit card number:");
+			//TODO
+			//check for number format exception
+			
+			if (creditCardNumber != null) {
+				this.cardValidation = new CardValidation();
+			    boolean isValid = this.cardValidation.aValidNumber(creditCardNumber);
+				if(isValid) {
+					this.cardNumber = creditCardNumber;
+					this.btnProceedToPayment.setVisible(false);
+	                this.btnPlaceOrder.setVisible(true);
+	                isValidCreditCard = true;
+	                JOptionPane.showMessageDialog(this, "Credit Card details have been verified. Please proceed to place the order");
+				}else {
+					JOptionPane.showMessageDialog(this, "Invalid Credit Card number. Please enter again.");
+				}
+				
+			} else {
+			   System.out.println("card string null");
+			}
+		}
+		
+		
+	}
+	
+	public void placeOrder() {
+		System.out.println("placeOrder");
 	}
 
 	public void displayMenu() {
