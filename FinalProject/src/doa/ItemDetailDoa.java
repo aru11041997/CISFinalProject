@@ -62,14 +62,55 @@ public class ItemDetailDoa {
 	}
 
 	public ItemDetail updateItem(final Connection conn, final ItemDetail menu) {
+		StringBuilder builder = new StringBuilder();
+		List<String> setFields = new ArrayList<>();
+		builder.append(" UPDATE itemdetail SET ");
+		int index = 1;
+		if (!(menu.getName().equals("") || menu.getDescription().equals(null))) {
+			setFields.add("name = ?");
+		}
+
+		if (!(menu.getMenuType() == null)) {
+			setFields.add("type = ?");
+		}
+
+		if (!(menu.getDescription().equals("") || menu.getDescription().equals(null))) {
+			setFields.add("description = ?");
+		}
+
+		if (!(menu.getPrice() != 0)) {
+			setFields.add("price = ?");
+		}
+
+		builder.append(String.join(", ", setFields));
+		builder.append(" WHERE itemID = ? ");
+
 		int count;
-		try (PreparedStatement preparedStatement = conn.prepareStatement(
-				"UPDATE itemdetail SET name = ?, type = ?, description = ?, , price = ? WHERE itemID = ?")) {
-			preparedStatement.setString(1, menu.getName());
-			preparedStatement.setString(2, menu.getMenuType().toString());
-			preparedStatement.setString(3, menu.getDescription());
-			preparedStatement.setFloat(4, menu.getPrice());
-			preparedStatement.setInt(5, menu.getItemId());
+		try (PreparedStatement preparedStatement = conn.prepareStatement(builder.toString())) {
+
+			if (!(menu.getName().equals("") || menu.getDescription().equals(null))) {
+				preparedStatement.setString(index, menu.getName());
+				index++;
+			}
+
+			if (!(menu.getMenuType() == null)) {
+				preparedStatement.setString(index, menu.getMenuType().toString());
+				index++;
+			}
+
+			if (!(menu.getDescription().equals("") || menu.getDescription().equals(null))) {
+				preparedStatement.setString(index, menu.getDescription());
+				index++;
+			}
+
+			if (!(menu.getPrice() != 0)) {
+				preparedStatement.setFloat(index++, menu.getPrice());
+				index++;
+			}
+
+			preparedStatement.setInt(index, menu.getItemId());
+			index++;
+
 			count = preparedStatement.executeUpdate();
 			if (count == 1) {
 				menu.setMessage("Update Successfully");
