@@ -128,7 +128,8 @@ public class HomeScreen extends JFrame implements ActionListener {
              chefScreen.setVisible(true);
              
 		}else if(e.getSource() == this.btnCustomerScreen) {
-			
+			CustomerScreen customerScreen = new CustomerScreen();
+			customerScreen.setVisible(true);
 		}else if(e.getSource() == this.btnDbaScreen) {
 			DbaScreen dbaScreen = new DbaScreen();
 			dbaScreen.setVisible(true);

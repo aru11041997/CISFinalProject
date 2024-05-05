@@ -21,6 +21,7 @@ public class ItemDetail extends BaseAttributes {
 		this.description = desc;
 		this.price = price;
 		this.menuType = menutype;
+		this.quantity =0;
 	}
 	
 	public int getItemId() {
@@ -69,5 +70,11 @@ public class ItemDetail extends BaseAttributes {
 
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
+	}
+	
+	@Override
+	public String toString() {
+		return "Name: "+ this.name + "; Type: " + this.menuType.toString() + "; Price: " + this.price + "; Description: " + this.description;
+		
 	}
 }
