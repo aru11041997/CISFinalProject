@@ -1,8 +1,10 @@
 package pojo;
 
+import java.io.Serializable;
+
 import utility.Constants.UserType;
 
-public class User extends BaseAttributes {
+public class User extends BaseAttributes implements Serializable{
 	private int userId;
 	private String username;
 	private String firstName;
@@ -14,13 +16,15 @@ public class User extends BaseAttributes {
 		super();
 	}
 
-	public User(int userId, String username, String firstName, String lastName, String password) {
-		super();
+	public User(int userId, String username, String firstName, String lastName, String password, UserType usertype, int opType, String msg) {
+		
+		super(opType,msg);
 		this.userId = userId;
 		this.username = username;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.password = password;
+		this.userType = usertype;
 	}
 
 	public int getUserId() {
@@ -70,4 +74,13 @@ public class User extends BaseAttributes {
 	public UserType getUserType() {
 		return userType;
 	}
+
+	@Override
+	public String toString() {
+		return "User [userId=" + userId + ", username=" + username + ", firstName=" + firstName + ", lastName="
+				+ lastName + ", password=" + password + ", userType=" + userType + "] " + super.toString();
+	}
+	
+	
+	
 }

@@ -106,7 +106,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		
         this.selectedItemsScrollPane = new JScrollPane(this.selectedItemTable);
         this.selectedItemsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        this.selectedItemsScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+       // this.selectedItemsScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         
         this.lblTotal = new JLabel("Total: $" + totalAmount);
         
@@ -127,7 +127,8 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		JPanel menuRow1 = new JPanel();
 		JPanel menuRow2 = new JPanel();
 		JPanel menuRow3 = new JPanel();
-
+		JPanel itemRow1 = new JPanel();
+		JPanel itemRow2 = new JPanel();
 		
 		menuPanel.setLayout(new BorderLayout());
 //		menuPanel.setBorder(BorderFactory.createTitledBorder("Menu"));
@@ -152,13 +153,24 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		//menuPanel.add(menuRow3);
 		
 
-		//selectedItemsPanel.setLayout(new BorderLayout());
 		
-		selectedItemsPanel.setLayout(new GridLayout(3,1));
-		selectedItemsPanel.setBorder(BorderFactory.createTitledBorder("Selected Items"));
-		selectedItemsPanel.add(this.selectedItemsScrollPane);
-		selectedItemsPanel.add(this.lblTotal);
-		selectedItemsPanel.add(this.btnProceedToPayment);
+		itemRow1.add(this.selectedItemsScrollPane);
+		
+		itemRow2.setLayout(new GridLayout(2,1));
+		itemRow2.add(this.lblTotal);
+		itemRow2.add(this.btnProceedToPayment);
+		
+		
+		selectedItemsPanel.setLayout(new BorderLayout());
+		selectedItemsPanel.add(new JPanel());
+		selectedItemsPanel.add(itemRow1, BorderLayout.CENTER);
+		selectedItemsPanel.add(itemRow2, BorderLayout.SOUTH);
+		
+//		selectedItemsPanel.setLayout(new FlowLayout());
+//		selectedItemsPanel.add(this.selectedItemsScrollPane);
+//		selectedItemsPanel.add(this.lblTotal);
+//		selectedItemsPanel.add(this.btnProceedToPayment);
+		
 		
 //		bottomPanel.setLayout(new GridLayout(2,2));
 //		bottomPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));

@@ -1,6 +1,8 @@
 package pojo;
 
-public class BaseAttributes {
+import java.io.Serializable;
+
+public class BaseAttributes implements Serializable {
 	private int optType;
 	private String message;
 
@@ -27,5 +29,10 @@ public class BaseAttributes {
 	public void setMessage(String message) {
 		this.message = message;
 	}
+	@Override
+	public String toString() {
+		return "BaseAttributes [optType=" + optType + ", message=" + message + "]";
+	}
 
+	
 }

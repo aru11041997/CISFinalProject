@@ -89,88 +89,93 @@ public class Server {
 
 		/** Run a thread */
 		public void run() {
-
 			// write the code to call a proper method to process the client request
 			try {
 				final ObjectInputStream inputFromClient = new ObjectInputStream(socket.getInputStream());
 				final ObjectOutputStream outputToClient = new ObjectOutputStream(socket.getOutputStream());
-				Object object = inputFromClient.readObject();
-				if (object instanceof User) {
-					User user = (User) object;
-					switch (user.getOptType()) {
-					case 1:
-						user = userDoa.registration(conn, user, hashCode);
-						object = user;
-						break;
+				
+				while(true) {
+					Object object = inputFromClient.readObject();
+					if (object instanceof User) {
+						User user = (User) object;
+						switch (user.getOptType()) {
+						case 1:
+							user = userDoa.registration(conn, user, hashCode);
+							object = user;
+							break;
 
-					case 2:
-						user = userDoa.login(conn, user, hashCode);
-						object = user;
-						break;
-					}
-				}
-
-				if (object instanceof ItemDetail) {
-					ItemDetail menu = (ItemDetail) object;
-					switch (menu.getOptType()) {
-					case 1:
-						List<ItemDetail> menus = itemDetailDoa.getAllItem(conn, menu);
-						object = menus;
-						break;
-
-					case 2:
-						menu = itemDetailDoa.addItem(conn, menu);
-						object = menu;
-						break;
-
-					case 3:
-						menu = itemDetailDoa.updateItem(conn, menu);
-						object = menu;
-						break;
-
-					case 4:
-						menu = itemDetailDoa.deleteItem(conn, menu);
-						object = menu;
-						break;
-					}
-				}
-
-				if (object instanceof Order) {
-					Order order = (Order) object;
-					switch (order.getOptType()) {
-					case 1:
-						List<Order> orders = orderDoa.getAllOrder(conn, order);
-						object = orders;
-						break;
-
-					case 2: // place order
-						if (cardValidation.aValidNumber(order.getCardNumber())) {
-							order = orderDoa.addOrder(conn, order);
-							Payment payment = new Payment();
-							payment.setOrderId(order.getOrderId());
-							final float amount = (float) order.getItemDetails().stream()
-									.mapToDouble(ItemDetail::getPrice).sum();
-							payment.setAmount(amount);
-
+						case 2:
+							user = userDoa.login(conn, user, hashCode);
+							object = user;
+							break;
 						}
-						object = order;
-						break;
-
-					case 3:
-						if (cardValidation.aValidNumber(order.getCardNumber())) {
-							order = orderDoa.updateOrder(conn, order);
-						}
-						object = order;
-						break;
-
-					case 4:
-						order = orderDoa.deleteOrder(conn, order);
-						object = order;
-						break;
 					}
-				}
 
-				outputToClient.writeObject(object);
+					if (object instanceof ItemDetail) {
+						ItemDetail menu = (ItemDetail) object;
+						switch (menu.getOptType()) {
+						case 1:
+							List<ItemDetail> menus = itemDetailDoa.getAllItem(conn, menu);
+							object = menus;
+							break;
+
+						case 2:
+							menu = itemDetailDoa.addItem(conn, menu);
+							object = menu;
+							break;
+
+						case 3:
+							menu = itemDetailDoa.updateItem(conn, menu);
+							object = menu;
+							break;
+
+						case 4:
+							menu = itemDetailDoa.deleteItem(conn, menu);
+							object = menu;
+							break;
+						}
+					}
+
+					if (object instanceof Order) {
+						Order order = (Order) object;
+						switch (order.getOptType()) {
+						case 1:
+							List<Order> orders = orderDoa.getAllOrder(conn, order);
+							object = orders;
+							break;
+
+						case 2: // place order
+							if (cardValidation.aValidNumber(order.getCardNumber())) {
+								order = orderDoa.addOrder(conn, order);
+								Payment payment = new Payment();
+								payment.setOrderId(order.getOrderId());
+								final float amount = (float) order.getItemDetails().stream()
+										.mapToDouble(ItemDetail::getPrice).sum();
+								payment.setAmount(amount);
+
+							}
+							object = order;
+							break;
+
+						case 3:
+							if (cardValidation.aValidNumber(order.getCardNumber())) {
+								order = orderDoa.updateOrder(conn, order);
+							}
+							object = order;
+							break;
+
+						case 4:
+							order = orderDoa.deleteOrder(conn, order);
+							object = order;
+							break;
+						}
+					}
+
+					outputToClient.writeObject(object);
+				}
+				
+				
+				
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
