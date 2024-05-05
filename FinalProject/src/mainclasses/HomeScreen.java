@@ -32,17 +32,14 @@ public class HomeScreen extends JFrame implements ActionListener {
 	
 	private JButton btnLogin;
 	private JButton btnSignUp;
+	private JButton btnDBA;
 	
-	ObjectOutputStream clientOutputStream;
-	ObjectInputStream clientInputStream;
 	Client client;
 	User user;
 	
 	
-	public HomeScreen(ObjectOutputStream os, ObjectInputStream is, Client client) {
+	public HomeScreen(Client client) {
 
-		this.clientOutputStream = os;
-		this.clientInputStream = is;
 		this.client = client;
 		
 		
@@ -51,6 +48,7 @@ public class HomeScreen extends JFrame implements ActionListener {
 		
 		this.btnLogin.addActionListener(this);
 		this.btnSignUp.addActionListener(this);
+		this.btnDBA.addActionListener(this);
 		
 		
 		this.setTitle("Home Screen");
@@ -77,6 +75,7 @@ public class HomeScreen extends JFrame implements ActionListener {
 		
 		this.btnLogin = new JButton("Login");
 		this.btnSignUp = new JButton("Sign Up");
+		this.btnDBA = new JButton("DBA");
 		
 		
 	}
@@ -102,6 +101,7 @@ public class HomeScreen extends JFrame implements ActionListener {
 //		row3.add(this.cmbUserType);
 		
 		row4.add(this.btnLogin);
+		row4.add(this.btnDBA);
 		
 		row5.add(this.lblSignUpText);
 		row5.add(this.btnSignUp);
@@ -130,8 +130,16 @@ public class HomeScreen extends JFrame implements ActionListener {
 		if(e.getSource() == this.btnLogin) {
 			LoginButtonClicked();
 		}else if(e.getSource() == this.btnSignUp) {
-			SignUpScreen signup = new SignUpScreen(this.clientOutputStream, this.clientInputStream, this.client);
+			SignUpScreen signup = new SignUpScreen(this.client);
 			signup.setVisible(true);
+			dispose();
+		}
+		else if(e.getSource() == this.btnDBA) {
+//			SignUpScreen signup = new SignUpScreen(this.clientOutputStream, this.clientInputStream, this.client);
+//			signup.setVisible(true);
+//			dispose();
+			DbaScreen dbaScreen = new DbaScreen( this.client);
+			dbaScreen.setVisible(true);
 			dispose();
 		}
 		
@@ -151,19 +159,21 @@ public class HomeScreen extends JFrame implements ActionListener {
 			this.user = (User) this.client.performAction(this.user);
 			
 			if(this.user!=null && this.user.getOptType()>0) {
-				System.out.println("Message = " + user.getMessage());
+				System.out.println("Message = " + this.user.getMessage());
 				
 				UserType uType = this.user.getUserType();
+				System.out.println(uType.toString());
+				
 				if(uType.equals(UserType.ADMIN)) {
-					DbaScreen dbaScreen = new DbaScreen(this.clientOutputStream, this.clientInputStream, this.client);
+					DbaScreen dbaScreen = new DbaScreen( this.client);
 					dbaScreen.setVisible(true);
 					dispose();
 				}else if(uType.equals(UserType.CHEF)) {
-					ChefScreen chefScreen = new ChefScreen(this.clientOutputStream, this.clientInputStream, this.client);
+					ChefScreen chefScreen = new ChefScreen(this.client);
 		            chefScreen.setVisible(true);
 		            dispose();
 				}else if(uType.equals(UserType.USER)) {
-					CustomerScreen customerScreen = new CustomerScreen(this.clientOutputStream, this.clientInputStream, this.client);
+					CustomerScreen customerScreen = new CustomerScreen( this.client);
 					customerScreen.setVisible(true);
 					dispose();
 				}

@@ -54,15 +54,11 @@ public class DbaScreen extends JFrame implements ActionListener {
 	private JButton btnDeleteItem;
 	private JButton btnClear;
 
-	ObjectOutputStream clientOutputStream;
-	ObjectInputStream clientInputStream;
 	Client client;
 	ItemDetail itemDetail;
 
-	public DbaScreen(ObjectOutputStream os, ObjectInputStream is, Client client) {
-
-		this.clientOutputStream = os;
-		this.clientInputStream = is;
+	public DbaScreen( Client client) {
+		System.out.println("DBA constructor");
 		this.client = client;
 
 		initializeUIComponents();
@@ -174,9 +170,9 @@ public class DbaScreen extends JFrame implements ActionListener {
 //	  private ArrayList<ItemDetail> getSampleItems() {
 //	        ArrayList<ItemDetail> items = new ArrayList<>();
 //
-//	        items.add(new ItemDetail(1,"item 1", MenuType.VEG, "this is the description for 1st item which is a veg dish", 10.0f));
-//	        items.add(new ItemDetail(2, "item 2", MenuType.VEGAN, "this is the description for 2nd item which is a vegan dish", 20.0f));
-//	        items.add(new ItemDetail(3,"item 3", MenuType.NONVEG, "this is the description for 3rd item which is a non-veg dish", 15.0f));
+//	        items.add(new ItemDetail(1,"item 1", MenuType.VEG, "this is the description for 1st item which is a veg dish", 10.0f, 0,""));
+//	        items.add(new ItemDetail(2, "item 2", MenuType.VEGAN, "this is the description for 2nd item which is a vegan dish", 20.0f,0,""));
+//	        items.add(new ItemDetail(3,"item 3", MenuType.NONVEG, "this is the description for 3rd item which is a non-veg dish", 15.0f,0,""));
 //	        
 //	        return items;
 //	    }
@@ -186,20 +182,20 @@ public class DbaScreen extends JFrame implements ActionListener {
 
 		List<ItemDetail> items = new ArrayList<>();
 		this.itemDetail = new ItemDetail(0, "", null, "", 0.0f, 1, "");
-		// public ItemDetail(int id, String name, MenuType menutype, String desc, float
-		// price, int opType, String msg)
-
 		items = (List<ItemDetail>) this.client.performAction(this.itemDetail);
-
-		for (ItemDetail item : items) {
-			System.out.println(item.toString());
-		}
+		//items = getSampleItems();
+		System.out.println("items list size = " + items.size());
+//		for (ItemDetail item : items) {
+//			System.out.println(item.toString());
+//		}
 
 		return items;
 	}
 
 	public void updateMenuTable() {
+		System.out.println("updateMenuTable");
 		List<ItemDetail> items = getMenuItems();
+		tableModel.setRowCount(0);
 		for (ItemDetail item : items) {
 			Object[] rowData = { item.getItemId(), item.getName(), item.getPrice(), item.getMenuType(),
 					item.getDescription() };
