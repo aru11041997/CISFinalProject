@@ -234,4 +234,22 @@ public class OrderDoa {
 		return orders;
 	}
 
+	public void updateStatus(final Connection conn, final Order order) {
+		try (PreparedStatement preparedStatement = conn
+				.prepareStatement("UPDATE order SET status = ? WHERE orderid = ?")) {
+			preparedStatement.setString(1, order.getOrderStatus().toString());
+			preparedStatement.setInt(2, order.getOrderId());
+			int count = preparedStatement.executeUpdate();
+			if (count >= 1) {
+				order.setMessage("Order updated.");
+			} else {
+				order.setMessage("Unable to update.");
+				order.setOptType(-5);
+			}
+		} catch (final Exception e) {
+			order.setMessage(e.getMessage());
+			order.setOptType(-5);
+		}
+	}
+
 }
