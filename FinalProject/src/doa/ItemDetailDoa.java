@@ -62,9 +62,22 @@ public class ItemDetailDoa {
 	}
 
 	public ItemDetail updateItem(final Connection conn, final ItemDetail menu) {
+		StringBuilder builder = new StringBuilder();
+		int index = 0;
+		if (!menu.getName().equals("")) {
+			builder.append("name = ?");
+			index++;
+		}
+
+		if (!(menu.getMenuType() == null)) {
+			if (index == 0) {
+				builder.append("type = ?");
+			}
+		}
+
 		int count;
 		try (PreparedStatement preparedStatement = conn.prepareStatement(
-				"UPDATE itemdetail SET name = ?, type = ?, description = ?, , price = ? WHERE itemID = ?")) {
+				"UPDATE itemdetail SET name = ?, type = ?, description = ?, price = ? WHERE itemID = ?")) {
 			preparedStatement.setString(1, menu.getName());
 			preparedStatement.setString(2, menu.getMenuType().toString());
 			preparedStatement.setString(3, menu.getDescription());
