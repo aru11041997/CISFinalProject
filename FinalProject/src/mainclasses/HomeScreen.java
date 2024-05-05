@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -32,10 +33,6 @@ public class HomeScreen extends JFrame implements ActionListener {
 	private JButton btnLogin;
 	private JButton btnSignUp;
 	
-	private JButton btnChefScreen;
-	private JButton btnCustomerScreen;
-	private JButton btnDbaScreen;
-
 	ObjectOutputStream clientOutputStream;
 	ObjectInputStream clientInputStream;
 	Client client;
@@ -52,9 +49,6 @@ public class HomeScreen extends JFrame implements ActionListener {
 		initializeUIComponents();
 		doTheLayout();
 		
-		this.btnChefScreen.addActionListener(this);
-		this.btnCustomerScreen.addActionListener(this);
-		this.btnDbaScreen.addActionListener(this);
 		this.btnLogin.addActionListener(this);
 		this.btnSignUp.addActionListener(this);
 		
@@ -81,9 +75,6 @@ public class HomeScreen extends JFrame implements ActionListener {
 //		this.cmbUserType = new JComboBox<String>(userTypes);
 //		this.cmbUserType.setSelectedIndex(1);
 		
-		this.btnChefScreen = new JButton("Chef Screen");
-		this.btnCustomerScreen = new JButton("Customer Screen");
-		this.btnDbaScreen = new JButton("DBA Screen");
 		this.btnLogin = new JButton("Login");
 		this.btnSignUp = new JButton("Sign Up");
 		
@@ -123,9 +114,6 @@ public class HomeScreen extends JFrame implements ActionListener {
 		center.add(row5);
 		
 		
-		bottom.add(this.btnChefScreen);
-		bottom.add(this.btnCustomerScreen);
-		bottom.add(this.btnDbaScreen);
 		
 		
 		this.setLayout(new BorderLayout());
@@ -139,25 +127,14 @@ public class HomeScreen extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		if(e.getSource()==this.btnChefScreen) {
-			 ChefScreen chefScreen = new ChefScreen();
-             chefScreen.setVisible(true);
-             
-		}else if(e.getSource() == this.btnCustomerScreen) {
-			CustomerScreen customerScreen = new CustomerScreen();
-			customerScreen.setVisible(true);
-		}else if(e.getSource() == this.btnDbaScreen) {
-			DbaScreen dbaScreen = new DbaScreen();
-			dbaScreen.setVisible(true);
-			
-		}else if(e.getSource() == this.btnLogin) {
+		if(e.getSource() == this.btnLogin) {
 			LoginButtonClicked();
 		}else if(e.getSource() == this.btnSignUp) {
 			SignUpScreen signup = new SignUpScreen(this.clientOutputStream, this.clientInputStream, this.client);
 			signup.setVisible(true);
-			
+			dispose();
 		}
-		dispose();
+		
 			
 	}
 	
@@ -166,12 +143,34 @@ public class HomeScreen extends JFrame implements ActionListener {
 		try {
 			String username = this.txtUsername.getText();
 			String password = this.txtPassword.getText();
+			//TODO
+			//validations
 			
-			//	public User(int userId, String username, String firstName, 
-			//String lastName, String password, UserType usertype, 
-			//int opType, String msg) {
-
 			this.user = new User(0,username,"","", password, null,2,"");
+			
+			this.user = (User) this.client.performAction(this.user);
+			
+			if(this.user!=null && this.user.getOptType()>0) {
+				System.out.println("Message = " + user.getMessage());
+				
+				UserType uType = this.user.getUserType();
+				if(uType.equals(UserType.ADMIN)) {
+					DbaScreen dbaScreen = new DbaScreen(this.clientOutputStream, this.clientInputStream, this.client);
+					dbaScreen.setVisible(true);
+					dispose();
+				}else if(uType.equals(UserType.CHEF)) {
+					ChefScreen chefScreen = new ChefScreen(this.clientOutputStream, this.clientInputStream, this.client);
+		            chefScreen.setVisible(true);
+		            dispose();
+				}else if(uType.equals(UserType.USER)) {
+					CustomerScreen customerScreen = new CustomerScreen(this.clientOutputStream, this.clientInputStream, this.client);
+					customerScreen.setVisible(true);
+					dispose();
+				}
+				
+			}else {
+				JOptionPane.showMessageDialog(null, "Invalid Credentials. Please try again");
+			}
 			
 		}catch(Exception e) {
 			e.printStackTrace();

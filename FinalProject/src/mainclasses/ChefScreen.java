@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -34,8 +36,17 @@ public class ChefScreen extends JFrame implements ActionListener{
     private  JButton btnOrderInProcess; 
     private  JButton btnOrderComplete; 
     
-	public ChefScreen() {
+    ObjectOutputStream clientOutputStream;
+	ObjectInputStream clientInputStream;
+	Client client;
+	
+	
+	public ChefScreen(ObjectOutputStream os, ObjectInputStream is, Client client) {
 		// Create layout for Chef Screen
+
+		this.clientOutputStream = os;
+		this.clientInputStream = is;
+		this.client = client;
 		
 		initializeUIComponents();
 		doTheLayout();
