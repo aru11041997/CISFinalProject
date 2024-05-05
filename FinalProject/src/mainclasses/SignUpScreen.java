@@ -4,12 +4,21 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import pojo.User;
+import utility.Constants;
+import utility.Constants.UserType;
 
 public class SignUpScreen extends JFrame implements ActionListener {
 
@@ -26,10 +35,21 @@ public class SignUpScreen extends JFrame implements ActionListener {
 	private JTextField txtPassword;
 	private JTextField txtConfirmPassword;
 	
+	private JLabel lblUserType;
+	private JComboBox cmbUserType;
+	
 	JButton btnSignUp;
 	
+	ObjectOutputStream clientOutputStream;
+	ObjectInputStream clientInputStream;
+	User user;
+	Client client;
 	
-	public SignUpScreen() {
+	public SignUpScreen(ObjectOutputStream os, ObjectInputStream is, Client client) {
+		
+		this.clientOutputStream = os;
+		this.clientInputStream = is;
+		this.client = client;
 		
 		initializeUIComponents();
 		doTheLayout();
@@ -61,7 +81,23 @@ public class SignUpScreen extends JFrame implements ActionListener {
 		
 		this.btnSignUp = new JButton("Sign Up");
 		
+		this.lblUserType = new JLabel("User Type");
+		String [] userTypes =  getUserTypes();
+		this.cmbUserType = new JComboBox<String>(userTypes);
+		this.cmbUserType.setSelectedIndex(1);
+		
 	}
+	
+	public String[] getUserTypes() {
+		Constants.UserType[] userTypes = Constants.UserType.values();
+		String[] userTypeStrings = new String[userTypes.length];
+		for (int i = 0; i < userTypes.length; i++) {
+			userTypeStrings[i] = userTypes[i].toString();
+        }
+		System.out.println(userTypeStrings.toString());
+		return userTypeStrings;
+	}
+	
 	
 	public void doTheLayout() {
 		
@@ -71,6 +107,7 @@ public class SignUpScreen extends JFrame implements ActionListener {
 		final JPanel row4 = new JPanel();
 		final JPanel row5 = new JPanel();
 		final JPanel row6 = new JPanel();
+		final JPanel row7 = new JPanel();
 		final JPanel center = new JPanel();
 		
 		row1.add(this.lblFirstName);
@@ -90,12 +127,16 @@ public class SignUpScreen extends JFrame implements ActionListener {
 		
 		row6.add(this.btnSignUp);
 		
-		center.setLayout(new GridLayout(6,1));
+		row7.add(this.lblUserType);
+		row7.add(this.cmbUserType);
+		
+		center.setLayout(new GridLayout(7,1));
 		center.add(row1);
 		center.add(row2);
 		center.add(row3);
 		center.add(row4);
 		center.add(row5);
+		center.add(row7);
 		center.add(row6);
 		
 		this.setLayout(new BorderLayout());
@@ -113,5 +154,36 @@ public class SignUpScreen extends JFrame implements ActionListener {
 	public void SignUpButtonClicked() {
 		//TODO
 		System.out.println("SignUpButtonClicked");
+		try {
+			String firstname = this.txtFirstName.getText();
+			String lastname = this.txtLastName.getText();
+			String pass = this.txtPassword.getText();
+			String username = this.txtUserName.getText();
+			String userType = this.cmbUserType.getSelectedItem().toString();
+			//TODO 
+			//validations
+			UserType type = UserType.valueOf(userType);
+			this.user = new User(0,username,firstname, lastname, pass, type, 1, "" );
+			
+			this.user = (User) this.client.performAction(this.user);
+			
+			if(this.user!=null && this.user.getOptType()>0) {
+				System.out.println("Message = " + user.getMessage());
+				JOptionPane.showMessageDialog(null, "User Created succesfully.");
+				
+				HomeScreen hs = new HomeScreen(this.clientOutputStream, this.clientInputStream, this.client);
+				hs.setVisible(true);
+				dispose();
+			}else {
+				JOptionPane.showMessageDialog(null, "User Creation Failed");
+			}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+		
 	}
 }

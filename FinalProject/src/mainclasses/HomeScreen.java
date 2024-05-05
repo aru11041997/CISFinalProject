@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -11,6 +13,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import pojo.User;
+import utility.Constants.UserType;
 
 public class HomeScreen extends JFrame implements ActionListener {
 
@@ -31,8 +36,19 @@ public class HomeScreen extends JFrame implements ActionListener {
 	private JButton btnCustomerScreen;
 	private JButton btnDbaScreen;
 
-	public HomeScreen() {
+	ObjectOutputStream clientOutputStream;
+	ObjectInputStream clientInputStream;
+	Client client;
+	User user;
+	
+	
+	public HomeScreen(ObjectOutputStream os, ObjectInputStream is, Client client) {
 
+		this.clientOutputStream = os;
+		this.clientInputStream = is;
+		this.client = client;
+		
+		
 		initializeUIComponents();
 		doTheLayout();
 		
@@ -135,14 +151,31 @@ public class HomeScreen extends JFrame implements ActionListener {
 			dbaScreen.setVisible(true);
 			
 		}else if(e.getSource() == this.btnLogin) {
-			
+			LoginButtonClicked();
 		}else if(e.getSource() == this.btnSignUp) {
-			SignUpScreen signup = new SignUpScreen();
+			SignUpScreen signup = new SignUpScreen(this.clientOutputStream, this.clientInputStream, this.client);
 			signup.setVisible(true);
 			
 		}
 		dispose();
 			
+	}
+	
+	public void LoginButtonClicked(){
+		System.out.println("LoginButtonClicked");
+		try {
+			String username = this.txtUsername.getText();
+			String password = this.txtPassword.getText();
+			
+			//	public User(int userId, String username, String firstName, 
+			//String lastName, String password, UserType usertype, 
+			//int opType, String msg) {
+
+			this.user = new User(0,username,"","", password, null,2,"");
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }
