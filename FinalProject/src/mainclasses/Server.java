@@ -148,8 +148,8 @@ public class Server {
 							order = orderDoa.addOrder(conn, order);
 							final Payment payment = new Payment();
 							payment.setOrderId(order.getOrderId());
-							final float amount = (float) order.getItemDetails().stream()
-									.mapToDouble(ItemDetail::getPrice).sum();
+							final float amount = order.getPrice(); //(float) order.getItemDetails().stream()
+									//.mapToDouble(ItemDetail::getPrice).sum();
 							payment.setAmount(amount);
 							paymentDoa.insertPayment(conn, payment);
 						}
@@ -157,15 +157,15 @@ public class Server {
 						break;
 
 					case 3:
-						if (cardValidation.aValidNumber(order.getCardNumber())) {
+						//if (cardValidation.aValidNumber(order.getCardNumber())) {
 							order = orderDoa.updateOrder(conn, order);
 							final Payment payment = new Payment();
 							payment.setOrderId(order.getOrderId());
-							final float amount = (float) order.getItemDetails().stream()
-									.mapToDouble(ItemDetail::getPrice).sum();
+							final float amount = order.getPrice(); // (float) order.getItemDetails().stream()
+									//.mapToDouble(ItemDetail::getPrice).sum();
 							payment.setAmount(amount);
 							paymentDoa.updatePayment(conn, payment);
-						}
+						//}
 						object = order;
 						break;
 
