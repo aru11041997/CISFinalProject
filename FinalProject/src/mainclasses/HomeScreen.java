@@ -32,7 +32,6 @@ public class HomeScreen extends JFrame implements ActionListener {
 	
 	private JButton btnLogin;
 	private JButton btnSignUp;
-	private JButton btnDBA;
 	
 	Client client;
 	User user;
@@ -48,7 +47,6 @@ public class HomeScreen extends JFrame implements ActionListener {
 		
 		this.btnLogin.addActionListener(this);
 		this.btnSignUp.addActionListener(this);
-		this.btnDBA.addActionListener(this);
 		
 		
 		this.setTitle("Home Screen");
@@ -75,7 +73,6 @@ public class HomeScreen extends JFrame implements ActionListener {
 		
 		this.btnLogin = new JButton("Login");
 		this.btnSignUp = new JButton("Sign Up");
-		this.btnDBA = new JButton("DBA");
 		
 		
 	}
@@ -101,7 +98,6 @@ public class HomeScreen extends JFrame implements ActionListener {
 //		row3.add(this.cmbUserType);
 		
 		row4.add(this.btnLogin);
-		row4.add(this.btnDBA);
 		
 		row5.add(this.lblSignUpText);
 		row5.add(this.btnSignUp);
@@ -134,15 +130,6 @@ public class HomeScreen extends JFrame implements ActionListener {
 			signup.setVisible(true);
 			dispose();
 		}
-		else if(e.getSource() == this.btnDBA) {
-//			SignUpScreen signup = new SignUpScreen(this.clientOutputStream, this.clientInputStream, this.client);
-//			signup.setVisible(true);
-//			dispose();
-			DbaScreen dbaScreen = new DbaScreen( this.client);
-			dbaScreen.setVisible(true);
-			dispose();
-		}
-		
 			
 	}
 	
