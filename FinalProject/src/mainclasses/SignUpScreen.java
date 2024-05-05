@@ -40,15 +40,11 @@ public class SignUpScreen extends JFrame implements ActionListener {
 	
 	JButton btnSignUp;
 	
-	ObjectOutputStream clientOutputStream;
-	ObjectInputStream clientInputStream;
 	User user;
 	Client client;
 	
-	public SignUpScreen(ObjectOutputStream os, ObjectInputStream is, Client client) {
+	public SignUpScreen(Client client) {
 		
-		this.clientOutputStream = os;
-		this.clientInputStream = is;
 		this.client = client;
 		
 		initializeUIComponents();
@@ -171,7 +167,7 @@ public class SignUpScreen extends JFrame implements ActionListener {
 				System.out.println("Message = " + user.getMessage());
 				JOptionPane.showMessageDialog(null, "User Created succesfully.");
 				
-				HomeScreen hs = new HomeScreen(this.clientOutputStream, this.clientInputStream, this.client);
+				HomeScreen hs = new HomeScreen(this.client);
 				hs.setVisible(true);
 				dispose();
 			}else {

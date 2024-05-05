@@ -34,7 +34,7 @@ public class Client {
 			e.printStackTrace();
 		}
 		
-		HomeScreen homeScreen = new HomeScreen(this.clientOutputStream, this.clientInputStream, this);
+		HomeScreen homeScreen = new HomeScreen(this);
 		homeScreen.setVisible(true);
 		
 	}
@@ -62,7 +62,7 @@ public class Client {
 	
 	public Object performAction(Object obj) {
 		try {
-			
+			connect();
 			this.clientOutputStream.writeObject(obj);
 			
 			obj= this.clientInputStream.readObject();

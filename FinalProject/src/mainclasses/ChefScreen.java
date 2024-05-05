@@ -36,16 +36,12 @@ public class ChefScreen extends JFrame implements ActionListener{
     private  JButton btnOrderInProcess; 
     private  JButton btnOrderComplete; 
     
-    ObjectOutputStream clientOutputStream;
-	ObjectInputStream clientInputStream;
-	Client client;
+    Client client;
 	
 	
-	public ChefScreen(ObjectOutputStream os, ObjectInputStream is, Client client) {
+	public ChefScreen(Client client) {
 		// Create layout for Chef Screen
 
-		this.clientOutputStream = os;
-		this.clientInputStream = is;
 		this.client = client;
 		
 		initializeUIComponents();
