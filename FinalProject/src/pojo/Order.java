@@ -1,5 +1,6 @@
 package pojo;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import utility.Constants.OrderStatus;
@@ -11,8 +12,9 @@ public class Order extends BaseAttributes {
 	private OrderStatus orderStatus;
 	private float price;
 	private String cardNumber;
+	private Timestamp orderDate;
 
-	Order() {
+	public Order() {
 		super();
 	}
 
@@ -62,6 +64,14 @@ public class Order extends BaseAttributes {
 
 	public void setCardNumber(String cardNumber) {
 		this.cardNumber = cardNumber;
+	}
+
+	public Timestamp getOrderDate() {
+		return orderDate;
+	}
+
+	public void setOrderDate(Timestamp orderDate) {
+		this.orderDate = orderDate;
 	}
 
 }

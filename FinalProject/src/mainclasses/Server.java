@@ -6,19 +6,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.List;
 
 import doa.ItemDetailDoa;
+import doa.OrderDoa;
+import doa.PaymentDoa;
 import doa.UserDoa;
 import pojo.ItemDetail;
 import pojo.Order;
+import pojo.Payment;
 import pojo.User;
 import utility.CardValidation;
-import utility.Constants.MenuType;
-import utility.Constants.UserType;
 import utility.HashCode;
 
 public class Server {
@@ -29,6 +27,8 @@ public class Server {
 	private ServerSocket serverSocket;
 	private UserDoa userDoa;
 	private ItemDetailDoa itemDetailDoa;
+	private OrderDoa orderDoa;
+	private PaymentDoa paymentDoa;
 
 	Server(int port) {
 		this.port = port;
@@ -36,6 +36,8 @@ public class Server {
 		cardValidation = new CardValidation();
 		userDoa = new UserDoa();
 		itemDetailDoa = new ItemDetailDoa();
+		orderDoa = new OrderDoa();
+		paymentDoa = new PaymentDoa();
 
 		//
 		initialize();
@@ -137,8 +139,34 @@ public class Server {
 					Order order = (Order) object;
 					switch (order.getOptType()) {
 					case 1:
+						List<Order> orders = orderDoa.getAllOrder(conn, order);
+						object = orders;
 						break;
 
+					case 2: // place order
+						if (cardValidation.aValidNumber(order.getCardNumber())) {
+							order = orderDoa.addOrder(conn, order);
+							Payment payment = new Payment();
+							payment.setOrderId(order.getOrderId());
+							final float amount = (float) order.getItemDetails().stream()
+									.mapToDouble(ItemDetail::getPrice).sum();
+							payment.setAmount(amount);
+
+						}
+						object = order;
+						break;
+
+					case 3:
+						if (cardValidation.aValidNumber(order.getCardNumber())) {
+							order = orderDoa.updateOrder(conn, order);
+						}
+						object = order;
+						break;
+
+					case 4:
+						order = orderDoa.deleteOrder(conn, order);
+						object = order;
+						break;
 					}
 				}
 

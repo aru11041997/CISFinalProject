@@ -4,10 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import pojo.ItemDetail;
 import pojo.Order;
+import utility.Constants.MenuType;
 
 public class OrderDoa {
 
@@ -18,23 +21,23 @@ public class OrderDoa {
 				.prepareStatement("INSERT INTO order(userid, orderDate, amount, status) VALUES (?,?,?,?)")) {
 			conn.setAutoCommit(false);
 			final float amount = (float) order.getItemDetails().stream().mapToDouble(ItemDetail::getPrice).sum();
-			Date today = new Date();
-			Timestamp timestamp = new Timestamp(today.getTime());
+			final Date today = new Date();
+			final Timestamp timestamp = new Timestamp(today.getTime());
 			preparedStatement.setInt(1, order.getUserId());
 			preparedStatement.setTimestamp(2, timestamp);
 			preparedStatement.setFloat(3, amount);
 			preparedStatement.setString(4, order.getOrderStatus().toString());
 			count = preparedStatement.executeUpdate();
-			ResultSet resultSet = preparedStatement.getGeneratedKeys();
+			final ResultSet resultSet = preparedStatement.getGeneratedKeys();
 			int id = -1;
 			if (resultSet.next()) {
 				id = resultSet.getInt(1);
 			}
 			if (count == 1) {
-				PreparedStatement preparedStatement1 = conn
+				final PreparedStatement preparedStatement1 = conn
 						.prepareStatement("INSERT INTO itemlist(orderid, itemid, quantity) VALUES(?,?,?)");
 				order.setMessage("Insert Successfully");
-				for (ItemDetail detail : order.getItemDetails()) {
+				for (final ItemDetail detail : order.getItemDetails()) {
 					preparedStatement1.setInt(1, id);
 					preparedStatement1.setInt(2, detail.getItemId());
 					preparedStatement1.setInt(3, detail.getQuantity());
@@ -49,7 +52,7 @@ public class OrderDoa {
 			conn.commit();
 			conn.setAutoCommit(true);
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			order.setMessage(e.getMessage());
 			order.setOptType(-2);
 		}
@@ -66,7 +69,7 @@ public class OrderDoa {
 				PreparedStatement preparedStatement1 = conn
 						.prepareStatement("INSERT INTO itemlist(orderid, itemid, quantity) VALUES(?,?,?)");
 				order.setMessage("Insert Successfully");
-				for (ItemDetail detail : order.getItemDetails()) {
+				for (final ItemDetail detail : order.getItemDetails()) {
 					preparedStatement1.setInt(1, order.getOrderId());
 					preparedStatement1.setInt(2, detail.getItemId());
 					preparedStatement1.setInt(3, detail.getQuantity());
@@ -83,7 +86,7 @@ public class OrderDoa {
 			conn.commit();
 			conn.setAutoCommit(true);
 			order.setMessage("Order updated.");
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			order.setMessage(e.getMessage());
 			order.setOptType(-3);
 		}
@@ -93,27 +96,77 @@ public class OrderDoa {
 	public Order deleteOrder(final Connection conn, final Order order) {
 		try (PreparedStatement preparedStatement = conn.prepareStatement("DELETE FROM order WHERE orderid = ?")) {
 			preparedStatement.setInt(1, order.getOrderId());
-			int count = preparedStatement.executeUpdate();
+			final int count = preparedStatement.executeUpdate();
 			if (count >= 1) {
 				order.setMessage("Order deleted.");
 			} else {
 				order.setMessage("Unable to delete.");
 				order.setOptType(-4);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			order.setMessage(e.getMessage());
 			order.setOptType(-4);
 		}
 		return order;
 	}
 
-	public void getAllOrder(final Connection conn, final Order order) {
-		try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM order where orderid  = ?")) {
-			preparedStatement.setInt(1, order.getOrderId());
-		} catch (Exception e) {
+	public List<Order> getAllOrder(final Connection conn, final Order order) {
+		final List<Order> orders = new ArrayList<>();
+		try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM order where userid  = ?")) {
+			preparedStatement.setInt(1, order.getUserId());
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				final Order order2 = new Order();
+				order2.setOrderId(resultSet.getInt("orderid"));
+				order2.setOrderDate(resultSet.getTimestamp("orderdate"));
+				orders.add(order2);
+			}
+			resultSet.close();
+
+			final PreparedStatement preparedStatement2 = conn.prepareStatement("SELECT * FROM itemlist WHERE orderId = ?");
+			final PreparedStatement preparedStatement3 = conn.prepareStatement("SELECT * FROM itemdetail WHERE itemID = ?");
+			for (final Order order2 : orders) {
+				preparedStatement2.setInt(1, order2.getOrderId());
+				resultSet = preparedStatement2.executeQuery();
+				final List<ItemDetail> itemDetails = new ArrayList<>();
+
+				while (resultSet.next()) {
+					final int itemId = resultSet.getInt("itemId");
+					final int quantity = resultSet.getInt("quantity");
+					preparedStatement3.setInt(1, itemId);
+					final ResultSet set = preparedStatement3.executeQuery();
+					if (set.next()) {
+						final ItemDetail detail = new ItemDetail();
+						detail.setItemId(set.getInt("itemId"));
+						detail.setDescription(set.getString("description"));
+						detail.setPrice(set.getFloat("price"));
+						detail.setName(set.getString("name"));
+
+						final String menuType = set.getString("type");
+						MenuType type = null;
+						if (menuType.equals("VEG"))
+							type = MenuType.VEG;
+						else if (menuType.equals("NONVEG"))
+							type = MenuType.NONVEG;
+						else if (menuType.equals("VEGAN"))
+							type = MenuType.VEGAN;
+
+						detail.setMenuType(type);
+						detail.setQuantity(quantity);
+
+						itemDetails.add(detail);
+
+					}
+				}
+				order2.setItemDetails(itemDetails);
+			}
+
+		} catch (final Exception e) {
 			order.setMessage(e.getMessage());
 			order.setOptType(-1);
 		}
+
+		return orders;
 	}
 
 }
