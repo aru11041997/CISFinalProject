@@ -122,12 +122,15 @@ public class OrderDoa {
 				final Order order2 = new Order();
 				order2.setOrderId(resultSet.getInt("orderid"));
 				order2.setOrderDate(resultSet.getTimestamp("orderdate"));
+				order2.setPrice(resultSet.getFloat("amount"));
 				orders.add(order2);
 			}
 			resultSet.close();
 
-			final PreparedStatement preparedStatement2 = conn.prepareStatement("SELECT * FROM itemlist WHERE orderId = ?");
-			final PreparedStatement preparedStatement3 = conn.prepareStatement("SELECT * FROM itemdetail WHERE itemID = ?");
+			final PreparedStatement preparedStatement2 = conn
+					.prepareStatement("SELECT * FROM itemlist WHERE orderId = ?");
+			final PreparedStatement preparedStatement3 = conn
+					.prepareStatement("SELECT * FROM itemdetail WHERE itemID = ?");
 			for (final Order order2 : orders) {
 				preparedStatement2.setInt(1, order2.getOrderId());
 				resultSet = preparedStatement2.executeQuery();
@@ -170,6 +173,86 @@ public class OrderDoa {
 		}
 
 		return orders;
+	}
+
+	public List<Order> getOrdersForChef(final Connection conn, final Order order) {
+		final List<Order> orders = new ArrayList<>();
+		try (PreparedStatement preparedStatement = conn
+				.prepareStatement("SELECT * FROM order WHERE status != 'COMPLETED'")) {
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				final Order order2 = new Order();
+				order2.setOrderId(resultSet.getInt("orderid"));
+				order2.setOrderDate(resultSet.getTimestamp("orderdate"));
+				order2.setPrice(resultSet.getFloat("amount"));
+				orders.add(order2);
+			}
+			resultSet.close();
+
+			final PreparedStatement preparedStatement2 = conn
+					.prepareStatement("SELECT * FROM itemlist WHERE orderId = ?");
+			final PreparedStatement preparedStatement3 = conn
+					.prepareStatement("SELECT * FROM itemdetail WHERE itemID = ?");
+			for (final Order order2 : orders) {
+				preparedStatement2.setInt(1, order2.getOrderId());
+				resultSet = preparedStatement2.executeQuery();
+				final List<ItemDetail> itemDetails = new ArrayList<>();
+
+				while (resultSet.next()) {
+					final int itemId = resultSet.getInt("itemId");
+					final int quantity = resultSet.getInt("quantity");
+					preparedStatement3.setInt(1, itemId);
+					final ResultSet set = preparedStatement3.executeQuery();
+					if (set.next()) {
+						final ItemDetail detail = new ItemDetail();
+						detail.setItemId(set.getInt("itemId"));
+						detail.setDescription(set.getString("description"));
+						detail.setPrice(set.getFloat("price"));
+						detail.setName(set.getString("name"));
+
+						final String menuType = set.getString("type");
+						MenuType type = null;
+						if (menuType.equals("VEG"))
+							type = MenuType.VEG;
+						else if (menuType.equals("NONVEG"))
+							type = MenuType.NONVEG;
+						else if (menuType.equals("VEGAN"))
+							type = MenuType.VEGAN;
+
+						detail.setMenuType(type);
+						detail.setQuantity(quantity);
+
+						itemDetails.add(detail);
+
+					}
+				}
+				order2.setItemDetails(itemDetails);
+			}
+
+		} catch (final Exception e) {
+			order.setMessage(e.getMessage());
+			order.setOptType(-1);
+		}
+
+		return orders;
+	}
+
+	public void updateStatus(final Connection conn, final Order order) {
+		try (PreparedStatement preparedStatement = conn
+				.prepareStatement("UPDATE order SET status = ? WHERE orderid = ?")) {
+			preparedStatement.setString(1, order.getOrderStatus().toString());
+			preparedStatement.setInt(2, order.getOrderId());
+			int count = preparedStatement.executeUpdate();
+			if (count >= 1) {
+				order.setMessage("Order updated.");
+			} else {
+				order.setMessage("Unable to update.");
+				order.setOptType(-5);
+			}
+		} catch (final Exception e) {
+			order.setMessage(e.getMessage());
+			order.setOptType(-5);
+		}
 	}
 
 }

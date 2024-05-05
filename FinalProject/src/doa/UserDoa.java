@@ -44,7 +44,13 @@ public class UserDoa {
 		return user;
 	}
 
-	public User registration(final Connection conn, final User user, final HashCode hashCode) {
+	public User registration(final Connection conn, User user, final HashCode hashCode) {
+		user = checkExistingUser(conn, user);
+
+		if (user.getOptType() == -2) {
+			return user;
+		}
+
 		int count;
 		try (PreparedStatement preparedStatement = conn.prepareStatement(
 				"INSERT INTO USER(username, firstname, lastname, password, usertype) " + "VALUES(?,?,?,?,?)")) {
@@ -59,6 +65,25 @@ public class UserDoa {
 			} else {
 				user.setMessage("Unable to insert.");
 				user.setOptType(-2);
+			}
+		} catch (final Exception exception) {
+			user.setMessage(exception.getMessage());
+			user.setOptType(-2);
+		}
+		return user;
+	}
+
+	public User checkExistingUser(final Connection conn, final User user) {
+		try (PreparedStatement preparedStatement = conn
+				.prepareStatement("SELECT COUNT(username) FROM user WHERE username = ?")) {
+			preparedStatement.setString(1, user.getUsername());
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				final int count = resultSet.getInt(1);
+				if (count >= 1) {
+					user.setMessage("Username already exists");
+					user.setOptType(-2);
+				}
 			}
 		} catch (final Exception exception) {
 			user.setMessage(exception.getMessage());
