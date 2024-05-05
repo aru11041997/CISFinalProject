@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,7 @@ import pojo.ItemDetail;
 import pojo.Order;
 import utility.CardValidation;
 import utility.Constants.MenuType;
+import utility.Constants.OrderStatus;
 
 public class CustomerScreen extends JFrame implements ActionListener {
 
@@ -57,7 +59,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 	private JButton btnDeleteSelectedItem;
 	private JButton btnPlaceOrder;
 
-	private double totalAmount;
+	private float totalAmount;
 
 	private DefaultTableModel menuTableModel;
 	private DefaultTableModel selectedItemTableModel;
@@ -191,24 +193,6 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		selectedItemsPanel.add(itemRow1, BorderLayout.CENTER);
 		selectedItemsPanel.add(itemRow2, BorderLayout.SOUTH);
 
-//		selectedItemsPanel.setLayout(new FlowLayout());
-//		selectedItemsPanel.add(this.selectedItemsScrollPane);
-//		selectedItemsPanel.add(this.lblTotal);
-//		selectedItemsPanel.add(this.btnProceedToPayment);
-
-//		bottomPanel.setLayout(new GridLayout(2,2));
-//		bottomPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-//		bottomPanel.add(this.lblQuantity);
-//        bottomPanel.add(this.txtQuantity);
-//        bottomPanel.add(this.btnAddItem);
-//        bottomPanel.add(this.lblTotal);
-
-//        this.setLayout(new BorderLayout());
-//        this.add(menuPanel, BorderLayout.WEST);
-//        this.add(selectedItemsPanel, BorderLayout.CENTER);
-//        this.add(bottomPanel, BorderLayout.SOUTH);
-//        this.add(this.btnProceedToPayment, BorderLayout.EAST);
-
 		this.setLayout(new GridLayout(1, 2));
 		this.add(menuPanel);
 		this.add(selectedItemsPanel);
@@ -235,7 +219,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		System.out.println("deleteSelectedItemFromCart");
 
 		int selectedItemRow = this.selectedItemTable.getSelectedRow();
-		System.out.println("selectedItemRow = " +selectedItemRow);
+		//System.out.println("selectedItemRow = " +selectedItemRow);
 		if (selectedItemRow != -1) {
 			
 			int numColumns = this.selectedItemTableModel.getColumnCount();
@@ -268,10 +252,10 @@ public class CustomerScreen extends JFrame implements ActionListener {
 			}		
 		}
 		
-		for(int i=0;i<this.selectedItems.size();i++) {
-			
-			System.out.println(this.selectedItems.get(i).toString());	
-		}
+//		for(int i=0;i<this.selectedItems.size();i++) {
+//			
+//			System.out.println(this.selectedItems.get(i).toString());	
+//		}
 	}
 
 	public void addItem() {
@@ -281,9 +265,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 			ItemDetail selectedItem = this.menuItems.get(selectedItemRow);
 			if (selectedItem != null) {
 				
-				
-				
-				System.out.println("selected item =" + selectedItem.getName());
+				//System.out.println("selected item =" + selectedItem.getName());
 				int quantity = Integer.parseInt(this.txtQuantity.getText());
 				selectedItem.setQuantity(quantity);
 				
@@ -296,12 +278,12 @@ public class CustomerScreen extends JFrame implements ActionListener {
 				this.totalAmount += (selectedItem.getPrice() * quantity);
 				this.lblTotal.setText("Total: $" + totalAmount);
 				
-				System.out.println("selected item === " + selectedItem.toString());
+				//System.out.println("selected item === " + selectedItem.toString());
 				this.selectedItems.add(selectedItem);
 				
-				for(int i=0;i<this.selectedItems.size();i++) {				
-					System.out.println(this.selectedItems.get(i).toString());	
-				}
+//				for(int i=0;i<this.selectedItems.size();i++) {				
+//					System.out.println(this.selectedItems.get(i).toString());	
+//				}
 			}
 		} else {
 			JOptionPane.showMessageDialog(this, "Please select an item from the menu.");
@@ -311,6 +293,11 @@ public class CustomerScreen extends JFrame implements ActionListener {
 
 	public void proceedToPayment() {
 		boolean isValidCreditCard = false;
+		if(this.selectedItems.size()==0) {
+			JOptionPane.showMessageDialog(this, "Please add items to your cart first");
+			return;
+		}
+		
 		while (!isValidCreditCard) {
 			String creditCardNumber = JOptionPane.showInputDialog(this, "Please enter your credit card number:");
 			//TODO
@@ -339,6 +326,35 @@ public class CustomerScreen extends JFrame implements ActionListener {
 	
 	public void placeOrder() {
 		System.out.println("placeOrder");
+		
+		if(this.selectedItems.size()==0) {
+			JOptionPane.showMessageDialog(this, "Please add items to your cart first");
+			return;
+		}
+		
+		//details needed ---> user id, card number, total amount, selected items.
+		this.order = new Order();
+		this.order.setCardNumber(this.cardNumber);
+		this.order.setItemDetails(this.selectedItems);
+		this.order.setPrice(this.totalAmount);
+		this.order.setOptType(2);
+		this.order.setOrderStatus(OrderStatus.PLACED);
+		//TODO:
+		//update user id
+		this.order.setUserId(2);
+		
+		System.out.println("order = " + this.order.toString());
+		
+		this.order = (Order) this.client.performAction(this.order);
+		
+		if(this.order!=null && this.order.getOptType()>0) {
+			System.out.println("Message = " + this.order.getMessage());
+			System.out.println("order id = " + this.order.getOrderId());
+			JOptionPane.showMessageDialog(this, "Order Placed. Your unique order id = " + this.order.getOrderId());
+		}else {
+			JOptionPane.showMessageDialog(null, "Order failed. try again");
+
+		}
 	}
 
 	public void displayMenu() {

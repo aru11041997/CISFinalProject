@@ -3,6 +3,7 @@ package doa;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,11 +17,10 @@ public class OrderDoa {
 
 	public Order addOrder(final Connection conn, final Order order) {
 		int count;
-
 		try (PreparedStatement preparedStatement = conn
-				.prepareStatement("INSERT INTO order(userid, orderDate, amount, status) VALUES (?,?,?,?)")) {
+				.prepareStatement("INSERT INTO `order`(userid, orderDate, amount, status) VALUES (?,?,?,?)",Statement.RETURN_GENERATED_KEYS)) {
 			conn.setAutoCommit(false);
-			final float amount = (float) order.getItemDetails().stream().mapToDouble(ItemDetail::getPrice).sum();
+			final float amount = (float) order.getPrice();
 			final Date today = new Date();
 			final Timestamp timestamp = new Timestamp(today.getTime());
 			preparedStatement.setInt(1, order.getUserId());
@@ -32,6 +32,8 @@ public class OrderDoa {
 			int id = -1;
 			if (resultSet.next()) {
 				id = resultSet.getInt(1);
+				order.setOrderId(id);
+				
 			}
 			if (count == 1) {
 				final PreparedStatement preparedStatement1 = conn
@@ -53,6 +55,7 @@ public class OrderDoa {
 			conn.setAutoCommit(true);
 
 		} catch (final Exception e) {
+			e.printStackTrace();
 			order.setMessage(e.getMessage());
 			order.setOptType(-2);
 		}
@@ -77,7 +80,7 @@ public class OrderDoa {
 				}
 				preparedStatement1.close();
 				final float amount = (float) order.getItemDetails().stream().mapToDouble(ItemDetail::getPrice).sum();
-				preparedStatement1 = conn.prepareStatement("UPDATE ORDER SET amount = ? WHERE orderid = ?");
+				preparedStatement1 = conn.prepareStatement("UPDATE `ORDER` SET amount = ? WHERE orderid = ?");
 				preparedStatement1.setFloat(1, amount);
 				preparedStatement1.setInt(2, order.getOrderId());
 				preparedStatement.executeUpdate();
@@ -94,7 +97,7 @@ public class OrderDoa {
 	}
 
 	public Order deleteOrder(final Connection conn, final Order order) {
-		try (PreparedStatement preparedStatement = conn.prepareStatement("DELETE FROM order WHERE orderid = ?")) {
+		try (PreparedStatement preparedStatement = conn.prepareStatement("DELETE FROM `order` WHERE orderid = ?")) {
 			preparedStatement.setInt(1, order.getOrderId());
 			final int count = preparedStatement.executeUpdate();
 			if (count >= 1) {
@@ -112,7 +115,7 @@ public class OrderDoa {
 
 	public List<Order> getAllOrder(final Connection conn, final Order order) {
 		final List<Order> orders = new ArrayList<>();
-		try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM order where userid  = ?")) {
+		try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM `order` where userid  = ?")) {
 			preparedStatement.setInt(1, order.getUserId());
 			ResultSet resultSet = preparedStatement.executeQuery();
 			while (resultSet.next()) {

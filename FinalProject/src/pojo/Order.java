@@ -74,4 +74,10 @@ public class Order extends BaseAttributes {
 		this.orderDate = orderDate;
 	}
 
+	@Override
+	public String toString() {
+		return "Order [itemDetails=" + itemDetails + ", userId=" + userId + ", orderId=" + orderId + ", orderStatus="
+				+ orderStatus + ", price=" + price + ", cardNumber=" + cardNumber + ", orderDate=" + orderDate + ", optyp=" + this.getOptType() + "]";
+	}
+
 }
