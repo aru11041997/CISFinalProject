@@ -15,13 +15,13 @@ public class UserDoa {
 				.prepareStatement("SELECT * FROM USER WHERE username = ? AND password = ?")) {
 			preparedStatement.setString(1, user.getUsername());
 			preparedStatement.setString(2, hashCode.getHashCode(user.getPassword()));
-			ResultSet resultSet = preparedStatement.executeQuery();
+			final ResultSet resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
 				user.setFirstName(resultSet.getString("firstname"));
 				user.setLastName(resultSet.getString("lastname"));
 				user.setUserId(resultSet.getInt("userid"));
 
-				String userType = resultSet.getString("usertype");
+				final String userType = resultSet.getString("usertype");
 				UserType type = null;
 				if (userType.equals("ADMIN"))
 					type = UserType.ADMIN;
@@ -37,7 +37,7 @@ public class UserDoa {
 				user.setOptType(-1);
 			}
 			resultSet.close();
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			user.setMessage(exception.getMessage());
 			user.setOptType(-1);
 		}
@@ -60,7 +60,7 @@ public class UserDoa {
 				user.setMessage("Unable to insert.");
 				user.setOptType(-2);
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			user.setMessage(exception.getMessage());
 			user.setOptType(-2);
 		}

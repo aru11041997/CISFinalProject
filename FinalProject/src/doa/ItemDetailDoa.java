@@ -11,14 +11,14 @@ import utility.Constants.MenuType;
 
 public class ItemDetailDoa {
 	public List<ItemDetail> getAllItem(final Connection conn, final ItemDetail itemDetail) {
-		List<ItemDetail> menus = new ArrayList<>();
+		final List<ItemDetail> menus = new ArrayList<>();
 		try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM itemdetail")) {
-			ResultSet resultSet = preparedStatement.executeQuery();
+			final ResultSet resultSet = preparedStatement.executeQuery();
 			while (resultSet.next()) {
-				ItemDetail menu2 = new ItemDetail();
+				final ItemDetail menu2 = new ItemDetail();
 				menu2.setItemId(resultSet.getInt("itemID"));
 				menu2.setName(resultSet.getString("name"));
-				String menuType = resultSet.getString("type");
+				final String menuType = resultSet.getString("type");
 
 				MenuType type = null;
 				if (menuType.equals("VEG"))
@@ -33,7 +33,7 @@ public class ItemDetailDoa {
 				menu2.setPrice(resultSet.getFloat("price"));
 				menus.add(menu2);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 
 		}
 		return menus;
@@ -54,7 +54,7 @@ public class ItemDetailDoa {
 				menu.setMessage("Unable to insert.");
 				menu.setOptType(-2);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			menu.setMessage(e.getMessage());
 			menu.setOptType(-2);
 		}
@@ -77,7 +77,7 @@ public class ItemDetailDoa {
 				menu.setMessage("Unable to update.");
 				menu.setOptType(-3);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			menu.setMessage(e.getMessage());
 			menu.setOptType(-3);
 		}
@@ -97,7 +97,7 @@ public class ItemDetailDoa {
 				menu.setOptType(-4);
 			}
 
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			menu.setMessage(exception.getMessage());
 			menu.setOptType(-4);
 		}
