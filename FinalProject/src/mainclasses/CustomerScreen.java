@@ -260,15 +260,15 @@ public class CustomerScreen extends JFrame implements ActionListener {
 	public void displayMenu() {
 		this.menuItems = new ArrayList<>();
 		
-		menuItems.add(new ItemDetail(1, "Pepperoni Pizza", MenuType.NONVEG,"This is the 1st menu option - Pepporoni pizza of non veg category", 10.0f));
-        menuItems.add(new ItemDetail(2, "Veg Extravaganza Pizza", MenuType.VEG,"This is the 2nd menu option - Veg Extravaganza of veg category", 5.0f));
-        menuItems.add(new ItemDetail(3, "Cheese Pizza", MenuType.VEG,"This is the 3rd menu option - Margerita pizza of Veg category", 15.0f));
-        menuItems.add(new ItemDetail(4, "Paneer Pizza", MenuType.VEGAN,"This is the 4th menu option - Paneer pizza of veg category", 18.0f));
-        menuItems.add(new ItemDetail(4, "Paneer Pizza", MenuType.VEGAN,"This is the 4th menu option - Paneer pizza of veg category", 18.0f));
-        menuItems.add(new ItemDetail(4, "Paneer Pizza", MenuType.VEGAN,"This is the 4th menu option - Paneer pizza of veg category", 18.0f));
-        menuItems.add(new ItemDetail(3, "Cheese Pizza", MenuType.VEG,"This is the 3rd menu option - Margerita pizza of Veg category", 15.0f));
-        menuItems.add(new ItemDetail(3, "Cheese Pizza", MenuType.VEG,"This is the 3rd menu option - Margerita pizza of Veg category", 15.0f));
-        menuItems.add(new ItemDetail(3, "Cheese Pizza", MenuType.VEG,"This is the 3rd menu option - Margerita pizza of Veg category", 15.0f));
+		menuItems.add(new ItemDetail(1, "Pepperoni Pizza", MenuType.NONVEG,"This is the 1st menu option - Pepporoni pizza of non veg category", 10.0f,1,""));
+        menuItems.add(new ItemDetail(2, "Veg Extravaganza Pizza", MenuType.VEG,"This is the 2nd menu option - Veg Extravaganza of veg category", 5.0f,1,""));
+        menuItems.add(new ItemDetail(3, "Cheese Pizza", MenuType.VEG,"This is the 3rd menu option - Margerita pizza of Veg category", 15.0f,1,""));
+        menuItems.add(new ItemDetail(4, "Paneer Pizza", MenuType.VEGAN,"This is the 4th menu option - Paneer pizza of veg category", 18.0f,1,""));
+        menuItems.add(new ItemDetail(4, "Paneer Pizza", MenuType.VEGAN,"This is the 4th menu option - Paneer pizza of veg category", 18.0f,1,""));
+        menuItems.add(new ItemDetail(4, "Paneer Pizza", MenuType.VEGAN,"This is the 4th menu option - Paneer pizza of veg category", 18.0f,1,""));
+        menuItems.add(new ItemDetail(3, "Cheese Pizza", MenuType.VEG,"This is the 3rd menu option - Margerita pizza of Veg category", 15.0f,1,""));
+        menuItems.add(new ItemDetail(3, "Cheese Pizza", MenuType.VEG,"This is the 3rd menu option - Margerita pizza of Veg category", 15.0f,1,""));
+        menuItems.add(new ItemDetail(3, "Cheese Pizza", MenuType.VEG,"This is the 3rd menu option - Margerita pizza of Veg category", 15.0f,1,""));
 
         
        
