@@ -12,6 +12,7 @@ import java.util.List;
 import pojo.ItemDetail;
 import pojo.Order;
 import utility.Constants.MenuType;
+import utility.Constants.OrderStatus;
 
 public class OrderDoa {
 
@@ -123,6 +124,7 @@ public class OrderDoa {
 				order2.setOrderId(resultSet.getInt("orderid"));
 				order2.setOrderDate(resultSet.getTimestamp("orderdate"));
 				order2.setPrice(resultSet.getFloat("amount"));
+				order2.setOrderStatus(OrderStatus.valueOf(resultSet.getString("status")));
 				orders.add(order2);
 			}
 			resultSet.close();
