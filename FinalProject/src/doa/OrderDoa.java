@@ -80,11 +80,11 @@ public class OrderDoa {
 					preparedStatement1.executeUpdate();
 				}
 				preparedStatement1.close();
-				final float amount = (float) order.getItemDetails().stream().mapToDouble(ItemDetail::getPrice).sum();
+				final float amount = order.getPrice();//(float) order.getItemDetails().stream().mapToDouble(ItemDetail::getPrice).sum();
 				preparedStatement1 = conn.prepareStatement("UPDATE `ORDER` SET amount = ? WHERE orderid = ?");
 				preparedStatement1.setFloat(1, amount);
 				preparedStatement1.setInt(2, order.getOrderId());
-				preparedStatement.executeUpdate();
+				preparedStatement1.executeUpdate();
 				preparedStatement1.close();
 			}
 			conn.commit();
@@ -93,6 +93,7 @@ public class OrderDoa {
 		} catch (final Exception e) {
 			order.setMessage(e.getMessage());
 			order.setOptType(-3);
+			e.printStackTrace();
 		}
 		return order;
 	}
@@ -124,6 +125,7 @@ public class OrderDoa {
 				order2.setOrderId(resultSet.getInt("orderid"));
 				order2.setOrderDate(resultSet.getTimestamp("orderdate"));
 				order2.setPrice(resultSet.getFloat("amount"));
+				order2.setUserId(resultSet.getInt("userId"));
 				order2.setOrderStatus(OrderStatus.valueOf(resultSet.getString("status")));
 				orders.add(order2);
 			}
@@ -180,7 +182,7 @@ public class OrderDoa {
 	public List<Order> getOrdersForChef(final Connection conn, final Order order) {
 		final List<Order> orders = new ArrayList<>();
 		try (PreparedStatement preparedStatement = conn
-				.prepareStatement("SELECT * FROM order WHERE status != 'COMPLETED'")) {
+				.prepareStatement("SELECT * FROM `order` WHERE status != 'COMPLETED'")) {
 			ResultSet resultSet = preparedStatement.executeQuery();
 			while (resultSet.next()) {
 				final Order order2 = new Order();
@@ -241,7 +243,7 @@ public class OrderDoa {
 
 	public void updateStatus(final Connection conn, final Order order) {
 		try (PreparedStatement preparedStatement = conn
-				.prepareStatement("UPDATE order SET status = ? WHERE orderid = ?")) {
+				.prepareStatement("UPDATE `order` SET status = ? WHERE orderid = ?")) {
 			preparedStatement.setString(1, order.getOrderStatus().toString());
 			preparedStatement.setInt(2, order.getOrderId());
 			int count = preparedStatement.executeUpdate();

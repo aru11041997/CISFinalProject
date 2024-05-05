@@ -61,7 +61,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 	private JButton btnPlaceOrder;
 	private JButton btnViewOrderItems;
 	private JButton btnEditOrderItems;
-	
+	private JButton btnUpdateOrder;
 
 	private float totalAmount;
 
@@ -96,9 +96,10 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		this.btnPlaceOrder.addActionListener(this);
 		this.btnViewOrderItems.addActionListener(this);
 		this.btnEditOrderItems.addActionListener(this);
+		this.btnUpdateOrder.addActionListener(this);
 
 		this.setTitle("Customer Screen - Place Order");
-		//this.setSize(1300, 600);
+		// this.setSize(1300, 600);
 		this.pack();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null); // Center the window
@@ -159,8 +160,9 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		this.btnPlaceOrder = new JButton("Place Order");
 		this.btnPlaceOrder.setVisible(false);
 		this.btnViewOrderItems = new JButton("View Order Items");
-		this.btnEditOrderItems = new JButton("Edit Order");
-		
+		this.btnEditOrderItems = new JButton("Edit Order Items");
+		this.btnUpdateOrder = new JButton("Update Order");
+		this.btnUpdateOrder.setVisible(false);
 
 	}
 
@@ -180,8 +182,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		JPanel ordersRowBottom = new JPanel();
 		JPanel orderRow1 = new JPanel();
 		JPanel orderRow2 = new JPanel();
-		
-		
+
 		menuRow1.add(this.menuScrollPane);
 
 		JPanel menuRowBottom = new JPanel(new GridLayout(2, 1));
@@ -203,7 +204,8 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		itemRow2Inner.add(this.btnDeleteSelectedItem);
 		itemRow2Inner.add(this.btnProceedToPayment);
 		itemRow2Inner.add(this.btnPlaceOrder);
-		
+		itemRow2Inner.add(this.btnUpdateOrder);
+
 		itemRow2.setLayout(new GridLayout(2, 1));
 		itemRow2.add(this.lblTotal);
 		itemRow2.add(itemRow2Inner);
@@ -214,20 +216,19 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		selectedItemsPanel.add(itemRow1, BorderLayout.CENTER);
 		selectedItemsPanel.add(itemRow2, BorderLayout.SOUTH);
 
-		
 		orderRow1.add(this.btnEditOrderItems);
 		orderRow2.add(this.btnViewOrderItems);
-		
-		ordersRowBottom.setLayout(new GridLayout(2,1));
+
+		ordersRowBottom.setLayout(new GridLayout(2, 1));
 		ordersRowBottom.add(orderRow1);
 		ordersRowBottom.add(orderRow2);
-		
+
 		ordersPanel.setLayout(new BorderLayout());
 		ordersPanel.setBorder(BorderFactory.createTitledBorder("My Orders"));
 		ordersPanel.add(new JPanel());
 		ordersPanel.add(this.ordersScrollPane, BorderLayout.CENTER);
 		ordersPanel.add(ordersRowBottom, BorderLayout.SOUTH);
-		
+
 		this.setLayout(new GridLayout(1, 3));
 		this.add(menuPanel);
 		this.add(selectedItemsPanel);
@@ -248,10 +249,58 @@ public class CustomerScreen extends JFrame implements ActionListener {
 			placeOrder();
 		} else if (e.getSource() == this.btnViewOrderItems) {
 			ViewOrderItems();
-		}else if (e.getSource() == this.btnEditOrderItems) {
+		} else if (e.getSource() == this.btnEditOrderItems) {
 			EditOrderItems();
+		}else if (e.getSource() == this.btnUpdateOrder) {
+			UpdateOrder();
 		}
-		
+
+	}
+
+	public void addItem() {
+
+		int selectedItemRow = this.menuTable.getSelectedRow();
+		if (selectedItemRow != -1) {
+
+			if (this.selectedItems.size() == 0) {
+				this.selectedItemTableModel.setRowCount(0);
+				this.btnDeleteSelectedItem.setEnabled(true);
+				this.btnPlaceOrder.setEnabled(true);
+				this.btnPlaceOrder.setVisible(false);
+				this.btnProceedToPayment.setEnabled(true);
+				this.btnUpdateOrder.setEnabled(true);
+				this.btnUpdateOrder.setVisible(false);
+				
+				this.order = new Order();
+				this.cardNumber="";
+			}
+
+			ItemDetail selectedItem = this.menuItems.get(selectedItemRow);
+			if (selectedItem != null) {
+
+				// System.out.println("selected item =" + selectedItem.getName());
+				int quantity = Integer.parseInt(this.txtQuantity.getText());
+				selectedItem.setQuantity(quantity);
+
+				Object[] rowData = new Object[3];
+				rowData[0] = selectedItem.getName();
+				rowData[1] = quantity;
+				rowData[2] = selectedItem.getPrice();
+
+				this.selectedItemTableModel.addRow(rowData);
+				this.totalAmount += (selectedItem.getPrice() * quantity);
+				this.lblTotal.setText("Total: $" + totalAmount);
+
+				// System.out.println("selected item === " + selectedItem.toString());
+				this.selectedItems.add(selectedItem);
+
+//				for(int i=0;i<this.selectedItems.size();i++) {				
+//					System.out.println(this.selectedItems.get(i).toString());	
+//				}
+			}
+		} else {
+			JOptionPane.showMessageDialog(this, "Please select an item from the menu.");
+		}
 
 	}
 
@@ -291,43 +340,6 @@ public class CustomerScreen extends JFrame implements ActionListener {
 				this.selectedItems.remove(i);
 				break;
 			}
-		}
-
-//		for(int i=0;i<this.selectedItems.size();i++) {
-//			
-//			System.out.println(this.selectedItems.get(i).toString());	
-//		}
-	}
-
-	public void addItem() {
-
-		int selectedItemRow = this.menuTable.getSelectedRow();
-		if (selectedItemRow != -1) {
-			ItemDetail selectedItem = this.menuItems.get(selectedItemRow);
-			if (selectedItem != null) {
-
-				// System.out.println("selected item =" + selectedItem.getName());
-				int quantity = Integer.parseInt(this.txtQuantity.getText());
-				selectedItem.setQuantity(quantity);
-
-				Object[] rowData = new Object[3];
-				rowData[0] = selectedItem.getName();
-				rowData[1] = quantity;
-				rowData[2] = selectedItem.getPrice();
-
-				this.selectedItemTableModel.addRow(rowData);
-				this.totalAmount += (selectedItem.getPrice() * quantity);
-				this.lblTotal.setText("Total: $" + totalAmount);
-
-				// System.out.println("selected item === " + selectedItem.toString());
-				this.selectedItems.add(selectedItem);
-
-//				for(int i=0;i<this.selectedItems.size();i++) {				
-//					System.out.println(this.selectedItems.get(i).toString());	
-//				}
-			}
-		} else {
-			JOptionPane.showMessageDialog(this, "Please select an item from the menu.");
 		}
 
 	}
@@ -392,7 +404,10 @@ public class CustomerScreen extends JFrame implements ActionListener {
 			System.out.println("Message = " + this.order.getMessage());
 			System.out.println("order id = " + this.order.getOrderId());
 			JOptionPane.showMessageDialog(this, "Order Placed. Your unique order id = " + this.order.getOrderId());
+			clearCart();
 			loadMyOrders();
+			this.btnPlaceOrder.setVisible(false);
+			this.btnProceedToPayment.setVisible(true);
 		} else {
 			JOptionPane.showMessageDialog(null, "Order failed. try again");
 
@@ -426,27 +441,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		System.out.println("items list size = " + items.size());
 		return items;
 	}
-	
-	@SuppressWarnings("unchecked")
-	public List<Order> getMyOrders(){
-		List<Order> ordersList = new ArrayList<Order>();
-		Order orderobj = new Order();
-		orderobj.setOptType(1);
-		//TODO - set user id
-		orderobj.setUserId(2);
-		
-		ordersList = (List<Order>) this.client.performAction(orderobj);
-		System.out.println("orders list size = " + ordersList.size());
-		return ordersList;
-	}
 
-	public void ViewOrderItems() {
-		System.out.println("ViewOrderItems");
-	}
-
-	public void EditOrderItems() {
-		System.out.println("EditOrderItems");
-	}
 	public void loadMyOrders() {
 		// this.menuItems = new ArrayList<>();
 
@@ -465,6 +460,178 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Order> getMyOrders() {
+		List<Order> ordersList = new ArrayList<Order>();
+		Order orderobj = new Order();
+		orderobj.setOptType(1);
+		// TODO - set user id
+		orderobj.setUserId(2);
+
+		ordersList = (List<Order>) this.client.performAction(orderobj);
+		System.out.println("orders list size = " + ordersList.size());
+
+		System.out.println("order list details:");
+		for (int i = 0; i < ordersList.size(); i++) {
+			System.out.println(ordersList.get(i).toString());
+		}
+		return ordersList;
+	}
+
+	public void clearCart() {
+		this.selectedItemTableModel.setRowCount(0);
+		this.selectedItems = new ArrayList<ItemDetail>();
+		this.totalAmount = 0;
+		this.lblTotal.setText("Total: $" + this.totalAmount);
+		this.txtQuantity.setText("1");
+		
+		this.order = new Order();
+		this.cardNumber ="";
+		
+		this.btnUpdateOrder.setVisible(false);
+		
+	}
+
+	public void ViewOrderItems() {
+		System.out.println("ViewOrderItems");
+
+		int selectedOrderRow = this.ordersItemTable.getSelectedRow();
+		System.out.println("selectedOrderRow = " + selectedOrderRow);
+
+		populateSelectedItemsTableWithOrder(selectedOrderRow, "View");
+	}
+	
+	public void EditOrderItems() {
+		System.out.println("EditOrderItems");
+		int selectedOrderRow = this.ordersItemTable.getSelectedRow();
+		System.out.println("selectedOrderRow = " + selectedOrderRow);
+
+		populateSelectedItemsTableWithOrder(selectedOrderRow, "Edit");
+		
+	}
+
+
+	public void populateSelectedItemsTableWithOrder(int selectedOrderRow, String action) {
+		if (selectedOrderRow != -1) {
+
+			int numColumns = this.ordersTableModel.getColumnCount();
+			Object[] rowData = new Object[numColumns];
+			for (int i = 0; i < numColumns; i++) {
+				rowData[i] = this.ordersTableModel.getValueAt(selectedOrderRow, i);
+			}
+
+			
+			int orderId = (int) rowData[0];
+			String status = (String) rowData[3];
+			System.out.println("selected order id =" + orderId + ", status =" + status);
+
+			if(action.equals("Edit") && (status.equals(OrderStatus.COMPLETED.toString()) || status.equals(OrderStatus.INPROCESS.toString()) )) {
+				//cant edit this,
+				JOptionPane.showMessageDialog(this, "This order has reached the " + status + "status. You cannot edit it anymore");
+				return;
+			}
+			
+			Order orderObj = findOrderDetails(orderId);
+			System.out.println("size of items list in this order = " + orderObj.getItemDetails().size());
+
+			displayOrderItems(orderObj);
+
+			if(action.equals("View")) {
+				this.btnDeleteSelectedItem.setEnabled(false);
+				this.btnPlaceOrder.setEnabled(false);
+				this.btnProceedToPayment.setEnabled(false);
+			}else if(action.equals("Edit")) {
+				this.btnDeleteSelectedItem.setEnabled(true);
+				this.btnPlaceOrder.setEnabled(false);
+				this.btnPlaceOrder.setVisible(false);
+				this.btnProceedToPayment.setEnabled(false);
+				this.btnProceedToPayment.setVisible(false);
+				this.btnUpdateOrder.setEnabled(true);
+				this.btnUpdateOrder.setVisible(true);
+				
+				this.order = orderObj;
+				setSelectedItemsList(orderObj);
+			}
+			
+
+		} else {
+			JOptionPane.showMessageDialog(this, "Please select an Order from the list.");
+		}
+
+	}
+
+	public Order findOrderDetails(int orderId) {
+		Order orderObj = new Order();
+		for (int i = 0; i < this.myOrders.size(); i++) {
+			if (orderId == this.myOrders.get(i).getOrderId()) {
+				orderObj = this.myOrders.get(i);
+				break;
+			}
+		}
+		return orderObj;
+	}
+
+	public void displayOrderItems(Order orderObj) {
+
+		this.selectedItemTableModel.setRowCount(0);
+
+		List<ItemDetail> orderItems = orderObj.getItemDetails();
+		for (int i = 0; i < orderItems.size(); i++) {
+
+			ItemDetail item = orderItems.get(i);
+
+			Object[] rowData = new Object[3];
+			rowData[0] = item.getName();
+			rowData[1] = item.getQuantity();
+			rowData[2] = item.getPrice();
+
+			this.selectedItemTableModel.addRow(rowData);
+
+		}
+		this.totalAmount = orderObj.getPrice();
+		this.lblTotal.setText("Total: $" + totalAmount);
+
+	}
+	
+	public void setSelectedItemsList(Order orderObj) {
+		List<ItemDetail> orderItems = orderObj.getItemDetails();
+		for (int i = 0; i < orderItems.size(); i++) {
+			this.selectedItems.add(orderItems.get(i));
+		}
+	}
+
+	public void UpdateOrder() {
+		System.out.println("updateOrder for order id = " + this.order.getOrderId() );
+		System.out.println("selected items= ");
+		for(ItemDetail item:this.selectedItems) {
+			System.out.println(item.toString());
+		}
+		
+		this.order.setItemDetails(this.selectedItems);
+		this.order.setPrice(this.totalAmount);
+		this.order.setOptType(3);
+		this.order.setOrderStatus(OrderStatus.PLACED);
+		
+		System.out.println("order details = " + this.order.toString());
+		
+		this.order = (Order) this.client.performAction(this.order);
+
+		if (this.order != null && this.order.getOptType() > 0) {
+			System.out.println("Message = " + this.order.getMessage());
+			System.out.println("order id = " + this.order.getOrderId());
+			JOptionPane.showMessageDialog(this, "Order Updated. Your unique order id = " + this.order.getOrderId());
+			clearCart();
+			loadMyOrders();
+			this.btnPlaceOrder.setVisible(false);
+			this.btnProceedToPayment.setVisible(true);
+		} else {
+			JOptionPane.showMessageDialog(null, "Order failed. try again");
+
+		}
+		
+		
+	}
+	
 }
 
 class MultiLineTableCellRenderer extends JTextArea implements TableCellRenderer {
