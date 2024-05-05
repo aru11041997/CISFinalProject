@@ -22,15 +22,15 @@ import utility.HashCode;
 public class Server {
 	private final int port;
 	private Connection conn;
-	private HashCode hashCode;
-	private CardValidation cardValidation;
+	private final HashCode hashCode;
+	private final CardValidation cardValidation;
 	private ServerSocket serverSocket;
-	private UserDoa userDoa;
-	private ItemDetailDoa itemDetailDoa;
-	private OrderDoa orderDoa;
-	private PaymentDoa paymentDoa;
+	private final UserDoa userDoa;
+	private final ItemDetailDoa itemDetailDoa;
+	private final OrderDoa orderDoa;
+	private final PaymentDoa paymentDoa;
 
-	Server(int port) {
+	Server(final int port) {
 		this.port = port;
 		hashCode = new HashCode();
 		cardValidation = new CardValidation();
@@ -75,7 +75,7 @@ public class Server {
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		new Server(8000);
 	}
 
@@ -114,7 +114,7 @@ public class Server {
 					ItemDetail menu = (ItemDetail) object;
 					switch (menu.getOptType()) {
 					case 1:
-						List<ItemDetail> menus = itemDetailDoa.getAllItem(conn, menu);
+						final List<ItemDetail> menus = itemDetailDoa.getAllItem(conn, menu);
 						object = menus;
 						break;
 
@@ -139,19 +139,19 @@ public class Server {
 					Order order = (Order) object;
 					switch (order.getOptType()) {
 					case 1:
-						List<Order> orders = orderDoa.getAllOrder(conn, order);
+						final List<Order> orders = orderDoa.getAllOrder(conn, order);
 						object = orders;
 						break;
 
 					case 2: // place order
 						if (cardValidation.aValidNumber(order.getCardNumber())) {
 							order = orderDoa.addOrder(conn, order);
-							Payment payment = new Payment();
+							final Payment payment = new Payment();
 							payment.setOrderId(order.getOrderId());
 							final float amount = (float) order.getItemDetails().stream()
 									.mapToDouble(ItemDetail::getPrice).sum();
 							payment.setAmount(amount);
-
+							paymentDoa.insertPayment(conn, payment);
 						}
 						object = order;
 						break;
@@ -159,6 +159,12 @@ public class Server {
 					case 3:
 						if (cardValidation.aValidNumber(order.getCardNumber())) {
 							order = orderDoa.updateOrder(conn, order);
+							final Payment payment = new Payment();
+							payment.setOrderId(order.getOrderId());
+							final float amount = (float) order.getItemDetails().stream()
+									.mapToDouble(ItemDetail::getPrice).sum();
+							payment.setAmount(amount);
+							paymentDoa.updatePayment(conn, payment);
 						}
 						object = order;
 						break;

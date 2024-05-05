@@ -46,11 +46,11 @@ public class PaymentDoa {
 		return payment;
 	}
 
-	public Payment updatePayment(final Connection conn, final Payment payment, final float amount) {
+	public Payment updatePayment(final Connection conn, final Payment payment) {
 		try (PreparedStatement preparedStatement = conn
-				.prepareStatement("UPDATE payment SET amount = ? WHERE payId = ?")) {
-			preparedStatement.setFloat(1, amount);
-			preparedStatement.setInt(2, payment.getPayId());
+				.prepareStatement("UPDATE payment SET amount = ? WHERE orderId = ?")) {
+			preparedStatement.setFloat(1, payment.getAmount());
+			preparedStatement.setInt(2, payment.getOrderId());
 			final int count = preparedStatement.executeUpdate();
 			if (count == 1) {
 				payment.setMessage("Update Successfully");
