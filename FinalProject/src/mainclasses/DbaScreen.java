@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -49,8 +51,15 @@ public class DbaScreen extends JFrame implements ActionListener {
 	private JButton btnDeleteItem;
 	private JButton btnClear;
 	
+	ObjectOutputStream clientOutputStream;
+	ObjectInputStream clientInputStream;
+	Client client;
 	
-	public DbaScreen() {
+	public DbaScreen(ObjectOutputStream os, ObjectInputStream is, Client client) {
+		
+		this.clientOutputStream = os;
+		this.clientInputStream = is;
+		this.client = client;
 		
 		initializeUIComponents();
 		doTheLayout();
