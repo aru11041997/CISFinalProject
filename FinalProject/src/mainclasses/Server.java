@@ -173,6 +173,11 @@ public class Server {
 						order = orderDoa.deleteOrder(conn, order);
 						object = order;
 						break;
+
+					case 5:
+						order = orderDoa.updateOrder(conn, order);
+						object = order;
+						break;
 					}
 				}
 
