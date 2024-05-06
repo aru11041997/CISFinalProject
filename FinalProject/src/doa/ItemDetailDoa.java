@@ -62,6 +62,7 @@ public class ItemDetailDoa {
 	}
 
 	public ItemDetail updateItem(final Connection conn, final ItemDetail menu) {
+		System.out.println(menu);
 		StringBuilder builder = new StringBuilder();
 		List<String> setFields = new ArrayList<>();
 		builder.append(" UPDATE itemdetail SET ");
@@ -78,12 +79,13 @@ public class ItemDetailDoa {
 			setFields.add("description = ?");
 		}
 
-		if (!(menu.getPrice() != 0)) {
+		if (menu.getPrice() > 0.0f) {
 			setFields.add("price = ?");
 		}
 
 		builder.append(String.join(", ", setFields));
 		builder.append(" WHERE itemID = ? ");
+		System.out.println(builder.toString());
 
 		int count;
 		try (PreparedStatement preparedStatement = conn.prepareStatement(builder.toString())) {
@@ -103,8 +105,8 @@ public class ItemDetailDoa {
 				index++;
 			}
 
-			if (!(menu.getPrice() != 0)) {
-				preparedStatement.setFloat(index++, menu.getPrice());
+			if (menu.getPrice() > 0.0f) {
+				preparedStatement.setFloat(index, menu.getPrice());
 				index++;
 			}
 
