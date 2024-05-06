@@ -187,8 +187,10 @@ public class OrderDoa {
 			while (resultSet.next()) {
 				final Order order2 = new Order();
 				order2.setOrderId(resultSet.getInt("orderid"));
+				order2.setUserId(resultSet.getInt("userId"));
 				order2.setOrderDate(resultSet.getTimestamp("orderdate"));
 				order2.setPrice(resultSet.getFloat("amount"));
+				order2.setOrderStatus(OrderStatus.valueOf(resultSet.getString("status")));
 				orders.add(order2);
 			}
 			resultSet.close();
@@ -241,7 +243,7 @@ public class OrderDoa {
 		return orders;
 	}
 
-	public void updateStatus(final Connection conn, final Order order) {
+	public Order updateStatus(final Connection conn, final Order order) {
 		try (PreparedStatement preparedStatement = conn
 				.prepareStatement("UPDATE `order` SET status = ? WHERE orderid = ?")) {
 			preparedStatement.setString(1, order.getOrderStatus().toString());
@@ -254,9 +256,11 @@ public class OrderDoa {
 				order.setOptType(-5);
 			}
 		} catch (final Exception e) {
+			e.printStackTrace();
 			order.setMessage(e.getMessage());
 			order.setOptType(-5);
 		}
+		return order;
 	}
 
 }
