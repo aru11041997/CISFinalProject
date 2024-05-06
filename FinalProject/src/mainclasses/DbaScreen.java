@@ -23,6 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import pojo.ItemDetail;
+import pojo.User;
 import utility.Constants;
 import utility.Constants.MenuType;
 import utility.Constants.UserType;
@@ -55,6 +56,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 	private JButton btnDeleteItem;
 	private JButton btnClear;
 	//private JButton btnViewItemDetails;
+	private JButton btnLogout;
 	
 
 	Client client;
@@ -73,6 +75,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 		this.btnDeleteItem.addActionListener(this);
 		this.btnClear.addActionListener(this);
 		//this.btnViewItemDetails.addActionListener(this);
+		this.btnLogout.addActionListener(this);
 
 		this.setTitle("DBA Screen - menu management");
 		// this.setSize(400, 400);
@@ -100,6 +103,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 
 		String[] menuTypes = getMenuTypes();
 		this.cmbType = new JComboBox<String>(menuTypes);
+		this.cmbType.setSelectedIndex(0);
 
 //		this.textAreaMenu = new JTextArea("Menu Details",10,50);
 //		this.textAreaMenu.setEditable(false);
@@ -118,6 +122,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 		this.btnDeleteItem = new JButton("Delete Item");
 		this.btnUpdateItem = new JButton("Update Item");
 		this.btnClear = new JButton("Clear");
+		this.btnLogout = new JButton("Logout");
 		//this.btnViewItemDetails = new JButton("View Details");
 
 	}
@@ -153,6 +158,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 		rightPanelBottom.add(this.btnUpdateItem);
 		rightPanelBottom.add(this.btnDeleteItem);
 		rightPanelBottom.add(this.btnClear);
+		rightPanelBottom.add(this.btnLogout);
 
 		rightPanel.setLayout(new BorderLayout());
 		rightPanel.add(new JPanel(), BorderLayout.NORTH);
@@ -176,11 +182,12 @@ public class DbaScreen extends JFrame implements ActionListener {
 
 	public String[] getMenuTypes() {
 		Constants.MenuType[] menuTypes = Constants.MenuType.values();
-		String[] menuTypeStrings = new String[menuTypes.length];
-		for (int i = 0; i < menuTypes.length; i++) {
-			menuTypeStrings[i] = menuTypes[i].toString();
+		int length = menuTypes.length+1;
+		String[] menuTypeStrings = new String[length];
+		menuTypeStrings[0]="";
+		for (int i = 1; i < length; i++) {
+			menuTypeStrings[i] = menuTypes[i-1].toString();
 		}
-		System.out.println(menuTypeStrings.toString());
 		return menuTypeStrings;
 	}
 
@@ -235,6 +242,8 @@ public class DbaScreen extends JFrame implements ActionListener {
 			UpdateItemButtonClicked();
 		} else if (e.getSource() == this.btnClear) {
 			ClearButtonClicked();
+		} else if (e.getSource() == this.btnLogout) {
+			LogoutSession();
 		}
 //		else if (e.getSource() == this.btnViewItemDetails) {
 //			ViewItemDetails();
@@ -276,7 +285,14 @@ public class DbaScreen extends JFrame implements ActionListener {
 		String desc = this.textAreaDescription.getText().trim();
 			
 		String type = this.cmbType.getSelectedItem().toString();
-		MenuType menutype = MenuType.valueOf(type);
+		MenuType menutype = null;
+		if(!(type.equals("") || type==null) ) {
+			 menutype = MenuType.valueOf(type);
+		}else {
+			JOptionPane.showMessageDialog(this.cmbType, "Please select a type");
+			return;
+		}
+		
 
 		this.itemDetail = new ItemDetail(0, name, menutype, desc, price, 2, "",this.client.getMainUserId(), this.client.getMainUserType());
 
@@ -288,6 +304,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 			ClearButtonClicked();
 			updateMenuTable();
 		} else {
+			System.out.println("message = " + this.itemDetail.getMessage());
 			JOptionPane.showMessageDialog(null, "Item Addition Failed");
 		}
 
@@ -348,7 +365,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 				throw new Exception();
 		}catch(Exception e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(this.txtItemID, "Invalid Number Format");
+			JOptionPane.showMessageDialog(this.txtItemID, "Please enter correct itemID");
 			this.txtItemID.setText("");
 			return;
 		}
@@ -384,10 +401,33 @@ public class DbaScreen extends JFrame implements ActionListener {
 		}
 		
 		String type = this.cmbType.getSelectedItem().toString();
-		MenuType menutype = MenuType.valueOf(type);
+		MenuType menutype = null;
+		if(!(type.equals("") || type==null)) {
+			 menutype = MenuType.valueOf(type);
+		}
 		
 
-		this.itemDetail = new ItemDetail(itemID, name, menutype, desc,price, 3, "",this.client.getMainUserId(), this.client.getMainUserType());
+		System.out.println("item id =" + itemID);
+		System.out.println("item name =" + name);
+		System.out.println("item price =" + price);
+		System.out.println("item desc =" + desc);
+		
+		if(name.equals("") && price==0 && desc.equals("") && menutype==null) {
+			JOptionPane.showMessageDialog(this, "Plese enter a new value for either Name, Price Description or MenuType to update");
+			return;
+		}
+
+		//this.itemDetail = new ItemDetail(itemID, name, menutype, desc,price, 3, "",this.client.getMainUserId(), this.client.getMainUserType());
+		this.itemDetail = new ItemDetail();
+		this.itemDetail.setItemId(itemID);
+		this.itemDetail.setPrice(price);
+		this.itemDetail.setName(name);
+		this.itemDetail.setDescription(desc);
+		this.itemDetail.setMenuType(menutype);
+		this.itemDetail.setOptType(3);
+		this.itemDetail.setMainUserId(this.client.getMainUserId());
+		this.itemDetail.setMainUserType(this.client.getMainUserType());
+		
 		int option = JOptionPane.showConfirmDialog(null, "Are you sure you wish to update the menu item with Id = " + itemID, "Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 		if (option == JOptionPane.YES_NO_OPTION) {
@@ -425,6 +465,29 @@ public class DbaScreen extends JFrame implements ActionListener {
 		this.txtPrice.setText("");
 		this.textAreaDescription.setText("");
 		this.cmbType.setSelectedIndex(0);
+		
+	}
+	
+	public void LogoutSession() {
+		
+		System.out.println("LogoutSession");
+		
+		User user = new User();
+		user.setOptType(3);
+		user.setMainUserId(this.client.getMainUserId());
+		user.setMainUserType(this.client.getMainUserType());
+		
+		user = (User) this.client.performAction(user);
+		
+		if(user!=null && user.getOptType()>0) {
+			System.out.println("logout successful");
+			HomeScreen hs = new HomeScreen(this.client);
+			hs.setVisible(true);
+			dispose();
+		}else {
+			JOptionPane.showMessageDialog(this, "logout failed");
+		}
+		
 		
 	}
 	

@@ -66,7 +66,7 @@ public class ItemDetailDoa {
 		List<String> setFields = new ArrayList<>();
 		builder.append(" UPDATE itemdetail SET ");
 		int index = 1;
-		if (!(menu.getName().equals("") || menu.getDescription().equals(null))) {
+		if (!(menu.getName().equals("") || menu.getName().equals(null))) {
 			setFields.add("name = ?");
 		}
 
@@ -78,7 +78,7 @@ public class ItemDetailDoa {
 			setFields.add("description = ?");
 		}
 
-		if (!(menu.getPrice() != 0)) {
+		if (!(menu.getPrice() == 0)) {
 			setFields.add("price = ?");
 		}
 
@@ -88,7 +88,7 @@ public class ItemDetailDoa {
 		int count;
 		try (PreparedStatement preparedStatement = conn.prepareStatement(builder.toString())) {
 
-			if (!(menu.getName().equals("") || menu.getDescription().equals(null))) {
+			if (!(menu.getName().equals("") || menu.getName().equals(null))) {
 				preparedStatement.setString(index, menu.getName());
 				index++;
 			}
@@ -103,8 +103,8 @@ public class ItemDetailDoa {
 				index++;
 			}
 
-			if (!(menu.getPrice() != 0)) {
-				preparedStatement.setFloat(index++, menu.getPrice());
+			if (!(menu.getPrice() == 0)) {
+				preparedStatement.setFloat(index, menu.getPrice());
 				index++;
 			}
 
@@ -119,6 +119,7 @@ public class ItemDetailDoa {
 				menu.setOptType(-3);
 			}
 		} catch (final Exception e) {
+			e.printStackTrace();
 			menu.setMessage(e.getMessage());
 			menu.setOptType(-3);
 		}
