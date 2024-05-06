@@ -141,7 +141,7 @@ public class HomeScreen extends JFrame implements ActionListener {
 			//TODO
 			//validations
 			
-			this.user = new User(0,username,"","", password, null,2,"");
+			this.user = new User(0,username,"","", password, null,2,"",null);
 			
 			this.user = (User) this.client.performAction(this.user);
 			
@@ -150,6 +150,9 @@ public class HomeScreen extends JFrame implements ActionListener {
 				
 				UserType uType = this.user.getUserType();
 				//System.out.println(uType.toString());
+				
+				this.client.setMainUserId(this.user.getUserId());
+				this.client.setMainUserType(uType);			
 				
 				if(uType.equals(UserType.ADMIN)) {
 					DbaScreen dbaScreen = new DbaScreen( this.client);

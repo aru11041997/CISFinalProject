@@ -185,6 +185,11 @@ public class Server {
 							order = orderDoa.updateStatus(conn, order);
 							object = order;
 							break;
+							
+						case 6:
+							final List<Order> orders2 = orderDoa.getOrdersForChef(conn, order);
+							object = orders2;
+							break;
 						}
 					} else {
 						order.setOptType(-6);
