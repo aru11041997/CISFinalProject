@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import pojo.User;
+import utility.Constants.UserType;
 
 public class Client {
 
@@ -15,8 +16,27 @@ public class Client {
 	private Socket socket;
 	ObjectOutputStream clientOutputStream;
 	ObjectInputStream clientInputStream;
+	private int mainUserId;
+	private UserType mainUserType;
 	
 
+	public int getMainUserId() {
+		return mainUserId;
+	}
+
+	public void setMainUserId(int mainUserId) {
+		this.mainUserId = mainUserId;
+	}
+
+	public UserType getMainUserType() {
+		return mainUserType;
+	}
+
+	public void setMainUserType(UserType mainUserType) {
+		this.mainUserType = mainUserType;
+	}
+
+	
 	public Client(int port, String hostname) {
 		this.port = port;
 		this.hostName = hostname;

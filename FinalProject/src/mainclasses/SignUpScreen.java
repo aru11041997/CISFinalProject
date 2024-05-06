@@ -159,7 +159,7 @@ public class SignUpScreen extends JFrame implements ActionListener {
 			//TODO 
 			//validations
 			UserType type = UserType.valueOf(userType);
-			this.user = new User(0,username,firstname, lastname, pass, type, 1, "" );
+			this.user = new User(0,username,firstname, lastname, pass, type, 1, "", null);
 			
 			this.user = (User) this.client.performAction(this.user);
 			
