@@ -1,6 +1,7 @@
 package mainclasses;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +23,7 @@ import javax.swing.table.DefaultTableModel;
 
 import pojo.ItemDetail;
 import pojo.Order;
+import pojo.User;
 import utility.Constants.OrderStatus;
 
 public class ChefScreen extends JFrame implements ActionListener {
@@ -42,7 +44,8 @@ public class ChefScreen extends JFrame implements ActionListener {
 	private JButton btnOrderReceived;
 	private JButton btnOrderInProcess;
 	private JButton btnOrderComplete;
-
+	private JButton btnLogout;
+	
 	Client client;
 	Order order;
 	List<Order> orderListPlaced;
@@ -62,6 +65,7 @@ public class ChefScreen extends JFrame implements ActionListener {
 		this.btnOrderComplete.addActionListener(this);
 		this.btnOrderInProcess.addActionListener(this);
 		this.btnOrderReceived.addActionListener(this);
+		this.btnLogout.addActionListener(this);
 
 		this.setTitle("Chef Screen - Manage Orders");
 		this.setSize(1200, 800);
@@ -96,6 +100,7 @@ public class ChefScreen extends JFrame implements ActionListener {
 		this.btnOrderReceived = new JButton("Mark as Received");
 		this.btnOrderInProcess = new JButton("Mark as In Process");
 		this.btnOrderComplete = new JButton("Mark as Complete");
+		this.btnLogout = new JButton("Logout");
 
 	}
 
@@ -114,6 +119,12 @@ public class ChefScreen extends JFrame implements ActionListener {
 		JPanel placedOrdersPanel = new JPanel();
 		JPanel receivedOrdersPanel = new JPanel();
 		JPanel inProcessOrdersPanel = new JPanel();
+		
+		JPanel orderGrid = new JPanel(new GridLayout(1,3));
+		JPanel top = new JPanel();
+	
+		top.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		top.add(this.btnLogout);
 
 		placedOrdersPanel.setLayout(new BorderLayout());
 		placedOrdersPanel.setBorder(BorderFactory.createTitledBorder("Placed Orders"));
@@ -130,14 +141,17 @@ public class ChefScreen extends JFrame implements ActionListener {
 		inProcessOrdersPanel.add(this.spInProcessOrders, BorderLayout.CENTER);
 		inProcessOrdersPanel.add(this.btnOrderComplete, BorderLayout.SOUTH);
 
-		this.setLayout(new GridLayout(1, 3));
-		this.add(placedOrdersPanel);
-		this.add(receivedOrdersPanel);
-		this.add(inProcessOrdersPanel);
-//        this.add(this.btnOrderReceived);
-//        this.add(this.btnOrderInProcess);
-//        this.add(this.btnOrderComplete);
+		
+		
+		orderGrid.add(placedOrdersPanel);
+		orderGrid.add(receivedOrdersPanel);
+		orderGrid.add(inProcessOrdersPanel);
 
+
+		this.setLayout(new BorderLayout());
+		this.add(top, BorderLayout.NORTH);
+		this.add(orderGrid, BorderLayout.CENTER);
+		
 	}
 
 	@Override
@@ -149,10 +163,37 @@ public class ChefScreen extends JFrame implements ActionListener {
 			MarkOderAsInProcess();
 		} else if (e.getSource() == this.btnOrderComplete) {
 			MarkOrderAsComplete();
+		} else if (e.getSource() == this.btnLogout) {
+			LogoutSession();
 		}
 
+		
 	}
 
+	public void LogoutSession() {
+		
+		System.out.println("LogoutSession");
+		
+		User user = new User();
+		user.setOptType(3);
+		user.setMainUserId(this.client.getMainUserId());
+		user.setMainUserType(this.client.getMainUserType());
+		
+		user = (User) this.client.performAction(user);
+		
+		if(user!=null && user.getOptType()>0) {
+			System.out.println("logout successful");
+			HomeScreen hs = new HomeScreen(this.client);
+			hs.setVisible(true);
+			dispose();
+		}else {
+			JOptionPane.showMessageDialog(this, "logout failed");
+		}
+		
+		
+	}
+	
+	
 	public void MarkOrderAsReceived() {
 		// TODO
 		System.out.println("MarkOrderAsReceived");
