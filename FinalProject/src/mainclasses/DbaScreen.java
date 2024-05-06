@@ -191,7 +191,20 @@ public class DbaScreen extends JFrame implements ActionListener {
 
 		List<ItemDetail> items = new ArrayList<>();
 		this.itemDetail = new ItemDetail(0, "", null, "", 0.0f, 1, "", this.client.getMainUserId(), this.client.getMainUserType());
-		items = (List<ItemDetail>) this.client.performAction(this.itemDetail);
+		//items = (List<ItemDetail>) this.client.performAction(this.itemDetail);
+		
+		Object object = this.client.performAction(this.itemDetail);
+		if (object instanceof List<?>) {
+			List<?> itemList = (List<?>) object;
+			//System.out.println("object list size = " + itemList.size());
+			for (Object obj : itemList) {
+				if (obj instanceof ItemDetail) {
+					//System.out.println(obj.toString());
+					items.add((ItemDetail) obj);
+				}
+			}
+		}
+		
 		//items = getSampleItems();
 		System.out.println("items list size = " + items.size());
 
@@ -232,13 +245,38 @@ public class DbaScreen extends JFrame implements ActionListener {
 	public void AddItemButtonClicked() {
 		System.out.println("AddItemButtonClicked");
 
-		String name = this.txtName.getText();
-		float price = Float.parseFloat(this.txtPrice.getText());
-		String desc = this.textAreaDescription.getText();
+		
+		
+		if(!this.txtName.getText().trim().matches("^[a-zA-Z0-9\\s-_]+$")) {
+			JOptionPane.showMessageDialog(this.txtName, "Invalid Name Format");//first parameter is the corresponding text field - parent component parameter for this method.
+			this.txtName.setText("");
+			return;
+		}
+		String name = this.txtName.getText().trim();
+		
+		float price;
+		try {
+			price = Float.parseFloat(this.txtPrice.getText());
+			if(!this.txtPrice.getText().trim().matches("^\\d+(\\.\\d{1,2})?$"))
+				throw new Exception();
+		}catch(Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this.txtPrice, "Invalid Number Format");
+			this.txtPrice.setText("");
+			return;
+		}
+		
+		
+		if(this.textAreaDescription.getText().trim()==null || this.textAreaDescription.getText().trim().equalsIgnoreCase("")) {
+			JOptionPane.showMessageDialog(this.textAreaDescription, "Please provide a small description");
+			this.textAreaDescription.setText("");
+			return;
+		}
+		String desc = this.textAreaDescription.getText().trim();
+			
 		String type = this.cmbType.getSelectedItem().toString();
-		// TODO
-		// validations
-
+		
+		
 		MenuType menutype = MenuType.valueOf(type);
 
 		this.itemDetail = new ItemDetail(0, name, menutype, desc, price, 2, "",this.client.getMainUserId(), this.client.getMainUserType());
@@ -259,9 +297,17 @@ public class DbaScreen extends JFrame implements ActionListener {
 	public void DeleteItemButtonClicked() {
 		System.out.println("DeleteItemButtonClicked");
 
-		int itemID = Integer.parseInt(this.txtItemID.getText());
-		// TODO
-		// validation
+		int itemID;
+		try {
+			itemID = Integer.parseInt(this.txtItemID.getText().trim());
+			if(!this.txtItemID.getText().trim().matches("^\\d+$"))
+				throw new Exception();
+		}catch(Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this.txtPrice, "Invalid Number Format");
+			this.txtPrice.setText("");
+			return;
+		}
 
 		this.itemDetail = new ItemDetail(itemID, "", null, "", 0.0f, 4, "",this.client.getMainUserId(), this.client.getMainUserType());
 		int option = JOptionPane.showConfirmDialog(null, "Are you sure you wish to delete the menu item with Id = " + itemID, "Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);

@@ -441,7 +441,18 @@ public class CustomerScreen extends JFrame implements ActionListener {
 
 		List<ItemDetail> items = new ArrayList<>();
 		this.itemDetail = new ItemDetail(0, "", null, "", 0.0f, 1, "", this.client.getMainUserId(), this.client.getMainUserType());
-		items = (List<ItemDetail>) this.client.performAction(this.itemDetail);
+		//items = (List<ItemDetail>) this.client.performAction(this.itemDetail);
+		
+		Object object = this.client.performAction(this.itemDetail);
+		if (object instanceof List<?>) {
+			List<?> itemList = (List<?>) object;
+			for (Object obj : itemList) {
+				if (obj instanceof ItemDetail) {
+					items.add((ItemDetail) obj);
+				}
+			}
+		}
+		
 		System.out.println("items list size = " + items.size());
 		return items;
 	}
@@ -475,6 +486,19 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		orderobj.setMainUserType(this.client.getMainUserType());
 
 		ordersList = (List<Order>) this.client.performAction(orderobj);
+		
+		
+		Object object = this.client.performAction(orderobj);
+		if (object instanceof List<?>) {
+			List<?> orderlist = (List<?>) object;
+			for (Object obj : orderlist) {
+				if (obj instanceof Order) {
+					
+					ordersList.add((Order) obj);
+				}
+			}
+		}
+		
 		System.out.println("orders list size = " + ordersList.size());
 
 		System.out.println("order list details:");

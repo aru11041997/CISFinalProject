@@ -292,7 +292,19 @@ public class ChefScreen extends JFrame implements ActionListener {
 		this.order.setMainUserId(this.client.getMainUserId());
 		this.order.setMainUserType(this.client.getMainUserType());
 
-		this.orderList = (List<Order>) this.client.performAction(this.order);
+		//this.orderList = (List<Order>) this.client.performAction(this.order);
+		this.orderList = new ArrayList<Order>();
+		
+		Object object = this.client.performAction(this.order);
+		if (object instanceof List<?>) {
+			List<?> orderlist = (List<?>) object;
+			for (Object obj : orderlist) {
+				if (obj instanceof Order) {
+					this.orderList.add((Order) obj);
+				}
+			}
+		}
+		
 
 		this.orderListInProcess = new ArrayList<Order>(0);
 		this.orderListPlaced = new ArrayList<Order>(0);
