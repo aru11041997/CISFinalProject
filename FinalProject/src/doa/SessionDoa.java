@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 
+import pojo.User;
 import utility.Constants.UserType;
 
 public class SessionDoa {
@@ -26,12 +27,14 @@ public class SessionDoa {
 	}
 
 	public boolean validateSession(final Connection conn, final int userId, final UserType userType) {
+		System.out.println("validate session");
 		try (PreparedStatement preparedStatement = conn
 				.prepareStatement("SELECT * FROM usersession WHERE userid = ? and active = true")) {
 			preparedStatement.setInt(1, userId);
 			final ResultSet resultSet = preparedStatement.executeQuery();
 			resultSet.next();
 			final int sessionId = resultSet.getInt("sessionid");
+			System.out.println("session id = " + sessionId);
 			final Timestamp timestamp = resultSet.getTimestamp("logintime");
 
 			final Instant currentSystemTime = Instant.now();
@@ -41,15 +44,16 @@ public class SessionDoa {
 			final Duration duration = Duration.between(loginTime, currentSystemTime);
 
 			final long differenceInMinutes = duration.toMinutes();
+			System.out.println(differenceInMinutes);
 
 			if (userType.equals(UserType.CHEF)) {
 				if (differenceInMinutes > 30) {
-					updateSession(conn, sessionId);
+					updateSession(conn, userId);
 					return false;
 				}
 			} else {
 				if (differenceInMinutes > 5) {
-					updateSession(conn, sessionId);
+					updateSession(conn, userId);
 					return false;
 				}
 			}
@@ -59,11 +63,11 @@ public class SessionDoa {
 		}
 	}
 
-	public boolean updateSession(final Connection conn, final int sessionid) {
+	public boolean updateSession(final Connection conn, final int userId) {
 		try (PreparedStatement preparedStatement = conn
-				.prepareStatement("UPDATE usersession SET active = ? WHERE sessionid = ?")) {
+				.prepareStatement("UPDATE usersession SET active = ? WHERE userid = ?")) {
 			preparedStatement.setBoolean(1, false);
-			preparedStatement.setInt(2, sessionid);
+			preparedStatement.setInt(2, userId);
 			final int count = preparedStatement.executeUpdate();
 			if (count >= 1) {
 				return true;
