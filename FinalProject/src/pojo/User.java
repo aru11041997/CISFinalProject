@@ -16,9 +16,9 @@ public class User extends BaseAttributes implements Serializable{
 		super();
 	}
 
-	public User(int userId, String username, String firstName, String lastName, String password, UserType usertype, int opType, String msg) {
+	public User(int userId, String username, String firstName, String lastName, String password, UserType usertype, int opType, String msg,  UserType type) {
 		
-		super(opType,msg);
+		super(opType,msg,userId, type);
 		this.userId = userId;
 		this.username = username;
 		this.firstName = firstName;

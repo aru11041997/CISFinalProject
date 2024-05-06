@@ -60,7 +60,8 @@ public class DbaScreen extends JFrame implements ActionListener {
 	public DbaScreen( Client client) {
 		System.out.println("DBA constructor");
 		this.client = client;
-
+		System.out.println("usr type - " + this.client.getMainUserType() + "; user id - " + this.client.getMainUserId());
+		
 		initializeUIComponents();
 		doTheLayout();
 
@@ -181,7 +182,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 	public List<ItemDetail> getMenuItems() {
 
 		List<ItemDetail> items = new ArrayList<>();
-		this.itemDetail = new ItemDetail(0, "", null, "", 0.0f, 1, "");
+		this.itemDetail = new ItemDetail(0, "", null, "", 0.0f, 1, "", this.client.getMainUserId(), this.client.getMainUserType());
 		items = (List<ItemDetail>) this.client.performAction(this.itemDetail);
 		//items = getSampleItems();
 		System.out.println("items list size = " + items.size());
@@ -231,7 +232,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 
 		MenuType menutype = MenuType.valueOf(type);
 
-		this.itemDetail = new ItemDetail(0, name, menutype, desc, price, 2, "");
+		this.itemDetail = new ItemDetail(0, name, menutype, desc, price, 2, "",this.client.getMainUserId(), this.client.getMainUserType());
 
 		this.itemDetail = (ItemDetail) this.client.performAction(this.itemDetail);
 
@@ -253,7 +254,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 		// TODO
 		// validation
 
-		this.itemDetail = new ItemDetail(itemID, "", null, "", 0.0f, 4, "");
+		this.itemDetail = new ItemDetail(itemID, "", null, "", 0.0f, 4, "",this.client.getMainUserId(), this.client.getMainUserType());
 		int option = JOptionPane.showConfirmDialog(null, "Are you sure you wish to delete the menu item with Id = " + itemID, "Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 		if (option == JOptionPane.YES_NO_OPTION) {
@@ -297,7 +298,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 		// TODO
 		// validation
 
-		this.itemDetail = new ItemDetail(itemID, name, menutype, desc,price, 3, "");
+		this.itemDetail = new ItemDetail(itemID, name, menutype, desc,price, 3, "",this.client.getMainUserId(), this.client.getMainUserType());
 		int option = JOptionPane.showConfirmDialog(null, "Are you sure you wish to update the menu item with Id = " + itemID, "Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 		if (option == JOptionPane.YES_NO_OPTION) {

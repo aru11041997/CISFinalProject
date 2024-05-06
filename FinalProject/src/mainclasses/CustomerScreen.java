@@ -87,6 +87,9 @@ public class CustomerScreen extends JFrame implements ActionListener {
 
 		this.client = client;
 
+		System.out.println("usr type - " + this.client.getMainUserType() + "; user id - " + this.client.getMainUserId());
+		
+		
 		initializeUIComponents();
 		doTheLayout();
 
@@ -392,9 +395,10 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		this.order.setPrice(this.totalAmount);
 		this.order.setOptType(2);
 		this.order.setOrderStatus(OrderStatus.PLACED);
-		// TODO:
-		// update user id
-		this.order.setUserId(2);
+		
+		this.order.setUserId(this.client.getMainUserId());
+		this.order.setMainUserId(this.client.getMainUserId());
+		this.order.setMainUserType(this.client.getMainUserType());
 
 		System.out.println("order = " + this.order.toString());
 
@@ -436,7 +440,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 	public List<ItemDetail> getMenuItems() {
 
 		List<ItemDetail> items = new ArrayList<>();
-		this.itemDetail = new ItemDetail(0, "", null, "", 0.0f, 1, "");
+		this.itemDetail = new ItemDetail(0, "", null, "", 0.0f, 1, "", this.client.getMainUserId(), this.client.getMainUserType());
 		items = (List<ItemDetail>) this.client.performAction(this.itemDetail);
 		System.out.println("items list size = " + items.size());
 		return items;
@@ -466,7 +470,9 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		Order orderobj = new Order();
 		orderobj.setOptType(1);
 		// TODO - set user id
-		orderobj.setUserId(2);
+		orderobj.setUserId(this.client.getMainUserId());
+		orderobj.setMainUserId(this.client.getMainUserId());
+		orderobj.setMainUserType(this.client.getMainUserType());
 
 		ordersList = (List<Order>) this.client.performAction(orderobj);
 		System.out.println("orders list size = " + ordersList.size());
@@ -611,6 +617,8 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		this.order.setPrice(this.totalAmount);
 		this.order.setOptType(3);
 		this.order.setOrderStatus(OrderStatus.PLACED);
+		this.order.setMainUserId(this.client.getMainUserId());
+		this.order.setMainUserType(this.client.getMainUserType());
 		
 		System.out.println("order details = " + this.order.toString());
 		

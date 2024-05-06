@@ -3,6 +3,7 @@ package pojo;
 import java.io.Serializable;
 
 import utility.Constants.MenuType;
+import utility.Constants.UserType;
 
 public class ItemDetail extends BaseAttributes implements Serializable{
 	private int itemId;
@@ -16,8 +17,8 @@ public class ItemDetail extends BaseAttributes implements Serializable{
 		super();
 	}
 
-	public ItemDetail(int id, String name, MenuType menutype, String desc, float price, int opType, String msg) {
-		super(opType,msg);
+	public ItemDetail(int id, String name, MenuType menutype, String desc, float price, int opType, String msg, int userId, UserType type) {
+		super(opType,msg,userId,type);
 		this.itemId = id;
 		this.name = name;
 		this.description = desc;

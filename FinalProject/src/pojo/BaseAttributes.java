@@ -14,9 +14,11 @@ public class BaseAttributes implements Serializable {
 		super();
 	}
 
-	public BaseAttributes(int op, String msg) {
+	public BaseAttributes(int op, String msg, int userId, UserType type) {
 		this.optType = op;
 		this.message = msg;
+		this.mainUserId = userId;
+		this.mainUserType = type;
 	}
 
 	public int getOptType() {

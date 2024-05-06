@@ -54,6 +54,7 @@ public class ChefScreen extends JFrame implements ActionListener {
 		// Create layout for Chef Screen
 
 		this.client = client;
+		System.out.println("usr type - " + this.client.getMainUserType() + "; user id - " + this.client.getMainUserId());
 
 		initializeUIComponents();
 		doTheLayout();
@@ -170,6 +171,8 @@ public class ChefScreen extends JFrame implements ActionListener {
 			this.order.setOptType(5);
 			this.order.setOrderId(orderObj.getOrderId());
 			this.order.setOrderStatus(OrderStatus.RECEIVED);
+			this.order.setMainUserId(this.client.getMainUserId());
+			this.order.setMainUserType(this.client.getMainUserType());
 
 			this.order = (Order) this.client.performAction(this.order);
 			if (this.order != null && this.order.getOptType() > 0) {
@@ -207,6 +210,8 @@ public class ChefScreen extends JFrame implements ActionListener {
 			this.order.setOptType(5);
 			this.order.setOrderId(orderObj.getOrderId());
 			this.order.setOrderStatus(OrderStatus.INPROCESS);
+			this.order.setMainUserId(this.client.getMainUserId());
+			this.order.setMainUserType(this.client.getMainUserType());
 
 			this.order = (Order) this.client.performAction(this.order);
 			
@@ -244,6 +249,8 @@ public class ChefScreen extends JFrame implements ActionListener {
 			this.order.setOptType(5);
 			this.order.setOrderId(orderObj.getOrderId());
 			this.order.setOrderStatus(OrderStatus.COMPLETED);
+			this.order.setMainUserId(this.client.getMainUserId());
+			this.order.setMainUserType(this.client.getMainUserType());
 
 			this.order = (Order) this.client.performAction(this.order);
 			if (this.order != null && this.order.getOptType() > 0) {
@@ -277,6 +284,8 @@ public class ChefScreen extends JFrame implements ActionListener {
 
 		this.order = new Order();
 		this.order.setOptType(6);
+		this.order.setMainUserId(this.client.getMainUserId());
+		this.order.setMainUserType(this.client.getMainUserType());
 
 		this.orderList = (List<Order>) this.client.performAction(this.order);
 
