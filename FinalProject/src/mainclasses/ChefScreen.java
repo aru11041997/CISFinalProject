@@ -284,7 +284,7 @@ public class ChefScreen extends JFrame implements ActionListener {
 		return orderObj;
 	}
 
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	public void loadOrders() {
 
 		this.order = new Order();

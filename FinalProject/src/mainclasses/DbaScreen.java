@@ -186,7 +186,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 
 
 
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	public List<ItemDetail> getMenuItems() {
 
 		List<ItemDetail> items = new ArrayList<>();
