@@ -34,6 +34,7 @@ import javax.swing.table.TableCellRenderer;
 
 import pojo.ItemDetail;
 import pojo.Order;
+import pojo.User;
 import utility.CardValidation;
 import utility.Constants.MenuType;
 import utility.Constants.OrderStatus;
@@ -62,6 +63,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 	private JButton btnViewOrderItems;
 	private JButton btnEditOrderItems;
 	private JButton btnUpdateOrder;
+	private JButton btnLogout;
 
 	private float totalAmount;
 
@@ -100,6 +102,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		this.btnViewOrderItems.addActionListener(this);
 		this.btnEditOrderItems.addActionListener(this);
 		this.btnUpdateOrder.addActionListener(this);
+		this.btnLogout.addActionListener(this);
 
 		this.setTitle("Customer Screen - Place Order");
 		// this.setSize(1300, 600);
@@ -166,6 +169,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		this.btnEditOrderItems = new JButton("Edit Order Items");
 		this.btnUpdateOrder = new JButton("Update Order");
 		this.btnUpdateOrder.setVisible(false);
+		this.btnLogout = new JButton("Logout");
 
 	}
 
@@ -185,6 +189,12 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		JPanel ordersRowBottom = new JPanel();
 		JPanel orderRow1 = new JPanel();
 		JPanel orderRow2 = new JPanel();
+
+		JPanel bottomGrid = new JPanel(new GridLayout(1, 3));
+		JPanel top = new JPanel();
+
+		top.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		top.add(this.btnLogout);
 
 		menuRow1.add(this.menuScrollPane);
 
@@ -232,10 +242,13 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		ordersPanel.add(this.ordersScrollPane, BorderLayout.CENTER);
 		ordersPanel.add(ordersRowBottom, BorderLayout.SOUTH);
 
-		this.setLayout(new GridLayout(1, 3));
-		this.add(menuPanel);
-		this.add(selectedItemsPanel);
-		this.add(ordersPanel);
+		bottomGrid.add(menuPanel);
+		bottomGrid.add(selectedItemsPanel);
+		bottomGrid.add(ordersPanel);
+
+		this.setLayout(new BorderLayout());
+		this.add(top, BorderLayout.NORTH);
+		this.add(bottomGrid, BorderLayout.CENTER);
 
 	}
 
@@ -256,6 +269,30 @@ public class CustomerScreen extends JFrame implements ActionListener {
 			EditOrderItems();
 		} else if (e.getSource() == this.btnUpdateOrder) {
 			UpdateOrder();
+		} else if (e.getSource() == this.btnLogout) {
+			LogoutSession();
+		}
+
+	}
+
+	public void LogoutSession() {
+
+		System.out.println("LogoutSession");
+
+		User user = new User();
+		user.setOptType(3);
+		user.setMainUserId(this.client.getMainUserId());
+		user.setMainUserType(this.client.getMainUserType());
+
+		user = (User) this.client.performAction(user);
+
+		if (user != null && user.getOptType() > 0) {
+			System.out.println("logout successful");
+			HomeScreen hs = new HomeScreen(this.client);
+			hs.setVisible(true);
+			dispose();
+		} else {
+			JOptionPane.showMessageDialog(this, "logout failed");
 		}
 
 	}

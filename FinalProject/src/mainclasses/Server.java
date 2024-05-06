@@ -110,12 +110,27 @@ public class Server {
 						sessionDoa.addSession(conn, user.getUserId());
 						object = user;
 						break;
+					
+					case 3:
+						//logout
+						int userId = user.getMainUserId();
+						boolean logout = sessionDoa.updateSession(conn, userId);
+						if(logout) {
+							user.setMessage("logout successful");
+						}else {
+							user.setMessage("logout fail");
+							user.setOptType(-3);
+						}
+						object = user;
+						break;
 					}
 				}
 
 				if (object instanceof ItemDetail) {
 					ItemDetail menu = (ItemDetail) object;
 					if (sessionDoa.validateSession(conn, menu.getMainUserId(), menu.getMainUserType())) {
+						System.out.println("session validated");
+						System.out.println(menu.getOptType());
 						switch (menu.getOptType()) {
 						case 1:
 							final List<ItemDetail> menus = itemDetailDoa.getAllItem(conn, menu);
@@ -138,6 +153,7 @@ public class Server {
 							break;
 						}
 					} else {
+						System.out.println("Session invalid");
 						menu.setOptType(-6);
 						object = menu;
 					}
