@@ -77,17 +77,22 @@ public class ChefScreen extends JFrame implements ActionListener {
 				0);
 		this.tablePlacedOrders = new JTable(this.placedOrdersModel);
 		this.spPlacedOrders = new JScrollPane(this.tablePlacedOrders);
-
+		this.spPlacedOrders.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		
 		this.receivedOrdersModel = new DefaultTableModel(
 				new Object[] { "Order ID", "Customer ID/Name", "Items Ordered" }, 0);
 		this.tableReceivedOrders = new JTable(this.receivedOrdersModel);
 		this.spReceivedOrders = new JScrollPane(this.tableReceivedOrders);
+		this.spReceivedOrders.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
+		
 		this.inProcessOrdersModel = new DefaultTableModel(
 				new Object[] { "Order ID", "Customer ID/Name", "Items Ordered" }, 0);
 		this.tableInProcessOrders = new JTable(this.inProcessOrdersModel);
 		this.spInProcessOrders = new JScrollPane(this.tableInProcessOrders);
+		this.spInProcessOrders.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
+		
 		this.btnOrderReceived = new JButton("Mark as Received");
 		this.btnOrderInProcess = new JButton("Mark as In Process");
 		this.btnOrderComplete = new JButton("Mark as Complete");
@@ -287,7 +292,19 @@ public class ChefScreen extends JFrame implements ActionListener {
 		this.order.setMainUserId(this.client.getMainUserId());
 		this.order.setMainUserType(this.client.getMainUserType());
 
-		this.orderList = (List<Order>) this.client.performAction(this.order);
+		//this.orderList = (List<Order>) this.client.performAction(this.order);
+		this.orderList = new ArrayList<Order>();
+		
+		Object object = this.client.performAction(this.order);
+		if (object instanceof List<?>) {
+			List<?> orderlist = (List<?>) object;
+			for (Object obj : orderlist) {
+				if (obj instanceof Order) {
+					this.orderList.add((Order) obj);
+				}
+			}
+		}
+		
 
 		this.orderListInProcess = new ArrayList<Order>(0);
 		this.orderListPlaced = new ArrayList<Order>(0);

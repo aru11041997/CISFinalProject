@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import pojo.User;
@@ -26,7 +27,7 @@ public class HomeScreen extends JFrame implements ActionListener {
 	private JLabel lblUserType;
 	private JLabel lblSignUpText;
 	private JTextField txtUsername;
-	private JTextField txtPassword;
+	private JPasswordField txtPassword;
 
 //	JComboBox cmbUserType;
 
@@ -62,7 +63,8 @@ public class HomeScreen extends JFrame implements ActionListener {
 		this.lblSignUpText = new JLabel("Don't have an account?");
 
 		this.txtUsername = new JTextField(10);
-		this.txtPassword = new JTextField(10);
+		this.txtPassword = new JPasswordField(10);
+		this.txtPassword.setEchoChar('*');
 
 //		String userTypes[] = {"","Customer","Chef", "DBA"};
 //		this.cmbUserType = new JComboBox<String>(userTypes);
