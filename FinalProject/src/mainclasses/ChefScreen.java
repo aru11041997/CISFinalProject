@@ -9,6 +9,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -45,7 +47,7 @@ public class ChefScreen extends JFrame implements ActionListener {
 	private JButton btnOrderInProcess;
 	private JButton btnOrderComplete;
 	private JButton btnLogout;
-	
+
 	Client client;
 	Order order;
 	List<Order> orderListPlaced;
@@ -57,7 +59,8 @@ public class ChefScreen extends JFrame implements ActionListener {
 		// Create layout for Chef Screen
 
 		this.client = client;
-		System.out.println("usr type - " + this.client.getMainUserType() + "; user id - " + this.client.getMainUserId());
+		System.out
+				.println("usr type - " + this.client.getMainUserType() + "; user id - " + this.client.getMainUserId());
 
 		initializeUIComponents();
 		doTheLayout();
@@ -72,7 +75,16 @@ public class ChefScreen extends JFrame implements ActionListener {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null); // Center the window
 
-		loadOrders();
+		Timer timer = new Timer();
+		// Schedule the task to fetch orders every 2 minutes
+		timer.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				loadOrders();
+			}
+		}, 0, 1 * 60 * 1000); // Delay in milliseconds (0), period in milliseconds (2 minutes * 60 seconds *
+								// 1000 milliseconds)
+
 	}
 
 	public void initializeUIComponents() {
@@ -82,21 +94,19 @@ public class ChefScreen extends JFrame implements ActionListener {
 		this.tablePlacedOrders = new JTable(this.placedOrdersModel);
 		this.spPlacedOrders = new JScrollPane(this.tablePlacedOrders);
 		this.spPlacedOrders.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		
+
 		this.receivedOrdersModel = new DefaultTableModel(
 				new Object[] { "Order ID", "Customer ID/Name", "Items Ordered" }, 0);
 		this.tableReceivedOrders = new JTable(this.receivedOrdersModel);
 		this.spReceivedOrders = new JScrollPane(this.tableReceivedOrders);
 		this.spReceivedOrders.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-		
 		this.inProcessOrdersModel = new DefaultTableModel(
 				new Object[] { "Order ID", "Customer ID/Name", "Items Ordered" }, 0);
 		this.tableInProcessOrders = new JTable(this.inProcessOrdersModel);
 		this.spInProcessOrders = new JScrollPane(this.tableInProcessOrders);
 		this.spInProcessOrders.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-		
 		this.btnOrderReceived = new JButton("Mark as Received");
 		this.btnOrderInProcess = new JButton("Mark as In Process");
 		this.btnOrderComplete = new JButton("Mark as Complete");
@@ -119,10 +129,10 @@ public class ChefScreen extends JFrame implements ActionListener {
 		JPanel placedOrdersPanel = new JPanel();
 		JPanel receivedOrdersPanel = new JPanel();
 		JPanel inProcessOrdersPanel = new JPanel();
-		
-		JPanel orderGrid = new JPanel(new GridLayout(1,3));
+
+		JPanel orderGrid = new JPanel(new GridLayout(1, 3));
 		JPanel top = new JPanel();
-	
+
 		top.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		top.add(this.btnLogout);
 
@@ -141,17 +151,14 @@ public class ChefScreen extends JFrame implements ActionListener {
 		inProcessOrdersPanel.add(this.spInProcessOrders, BorderLayout.CENTER);
 		inProcessOrdersPanel.add(this.btnOrderComplete, BorderLayout.SOUTH);
 
-		
-		
 		orderGrid.add(placedOrdersPanel);
 		orderGrid.add(receivedOrdersPanel);
 		orderGrid.add(inProcessOrdersPanel);
 
-
 		this.setLayout(new BorderLayout());
 		this.add(top, BorderLayout.NORTH);
 		this.add(orderGrid, BorderLayout.CENTER);
-		
+
 	}
 
 	@Override
@@ -167,33 +174,30 @@ public class ChefScreen extends JFrame implements ActionListener {
 			LogoutSession();
 		}
 
-		
 	}
 
 	public void LogoutSession() {
-		
+
 		System.out.println("LogoutSession");
-		
+
 		User user = new User();
 		user.setOptType(3);
 		user.setMainUserId(this.client.getMainUserId());
 		user.setMainUserType(this.client.getMainUserType());
-		
+
 		user = (User) this.client.performAction(user);
-		
-		if(user!=null && user.getOptType()>0) {
+
+		if (user != null && user.getOptType() > 0) {
 			System.out.println("logout successful");
 			HomeScreen hs = new HomeScreen(this.client);
 			hs.setVisible(true);
 			dispose();
-		}else {
+		} else {
 			JOptionPane.showMessageDialog(this, "logout failed");
 		}
-		
-		
+
 	}
-	
-	
+
 	public void MarkOrderAsReceived() {
 		// TODO
 		System.out.println("MarkOrderAsReceived");
@@ -212,7 +216,7 @@ public class ChefScreen extends JFrame implements ActionListener {
 			System.out.println("order id = " + orderId);
 			Order orderObj = findOrderObject(orderId);
 			System.out.println("orderObj = " + orderObj.toString());
-			
+
 			this.order = new Order();
 			this.order.setOptType(5);
 			this.order.setOrderId(orderObj.getOrderId());
@@ -251,7 +255,7 @@ public class ChefScreen extends JFrame implements ActionListener {
 			orderId = (int) rowData[0];
 
 			Order orderObj = findOrderObject(orderId);
-			
+
 			this.order = new Order();
 			this.order.setOptType(5);
 			this.order.setOrderId(orderObj.getOrderId());
@@ -260,20 +264,18 @@ public class ChefScreen extends JFrame implements ActionListener {
 			this.order.setMainUserType(this.client.getMainUserType());
 
 			this.order = (Order) this.client.performAction(this.order);
-			
+
 			if (this.order != null && this.order.getOptType() > 0) {
 				System.out.println("updated; message = " + this.order.getMessage());
 
 				this.inProcessOrdersModel.addRow(rowData);
 				this.receivedOrdersModel.removeRow(selectedRow);
 
-				
 				this.orderListInProcess.add(orderObj);
 				this.orderListReceived.remove(orderObj);
-			}else {
+			} else {
 				JOptionPane.showMessageDialog(this, "Something went wrong");
 			}
-			
 
 		}
 	}
@@ -290,7 +292,7 @@ public class ChefScreen extends JFrame implements ActionListener {
 			inProcessOrdersModel.removeRow(selectedRow);
 
 			Order orderObj = findOrderObject(orderId);
-			
+
 			this.order = new Order();
 			this.order.setOptType(5);
 			this.order.setOrderId(orderObj.getOrderId());
@@ -301,13 +303,12 @@ public class ChefScreen extends JFrame implements ActionListener {
 			this.order = (Order) this.client.performAction(this.order);
 			if (this.order != null && this.order.getOptType() > 0) {
 				System.out.println("updated; message = " + this.order.getMessage());
-				
+
 				this.orderList.remove(orderObj);
 				this.orderListInProcess.remove(orderObj);
-			}else {
+			} else {
 				JOptionPane.showMessageDialog(this, "Something went wrong");
 			}
-			
 
 		}
 	}
@@ -333,9 +334,9 @@ public class ChefScreen extends JFrame implements ActionListener {
 		this.order.setMainUserId(this.client.getMainUserId());
 		this.order.setMainUserType(this.client.getMainUserType());
 
-		//this.orderList = (List<Order>) this.client.performAction(this.order);
+		// this.orderList = (List<Order>) this.client.performAction(this.order);
 		this.orderList = new ArrayList<Order>();
-		
+
 		Object object = this.client.performAction(this.order);
 		if (object instanceof List<?>) {
 			List<?> orderlist = (List<?>) object;
@@ -345,11 +346,14 @@ public class ChefScreen extends JFrame implements ActionListener {
 				}
 			}
 		}
-		
 
 		this.orderListInProcess = new ArrayList<Order>(0);
 		this.orderListPlaced = new ArrayList<Order>(0);
 		this.orderListReceived = new ArrayList<Order>(0);
+
+		this.inProcessOrdersModel.setRowCount(0);
+		this.placedOrdersModel.setRowCount(0);
+		this.receivedOrdersModel.setRowCount(0);
 
 		// order id, customer id, items
 		for (Order orderObj : this.orderList) {

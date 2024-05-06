@@ -117,7 +117,7 @@ public class OrderDoa {
 
 	public List<Order> getAllOrder(final Connection conn, final Order order) {
 		final List<Order> orders = new ArrayList<>();
-		try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM `order` where userid  = ?")) {
+		try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM `order` where userid  = ? order by orderId desc")) {
 			preparedStatement.setInt(1, order.getUserId());
 			ResultSet resultSet = preparedStatement.executeQuery();
 			while (resultSet.next()) {
