@@ -54,7 +54,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 	private JButton btnUpdateItem;
 	private JButton btnDeleteItem;
 	private JButton btnClear;
-	private JButton btnViewItemDetails;
+	//private JButton btnViewItemDetails;
 	
 
 	Client client;
@@ -72,7 +72,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 		this.btnUpdateItem.addActionListener(this);
 		this.btnDeleteItem.addActionListener(this);
 		this.btnClear.addActionListener(this);
-		this.btnViewItemDetails.addActionListener(this);
+		//this.btnViewItemDetails.addActionListener(this);
 
 		this.setTitle("DBA Screen - menu management");
 		// this.setSize(400, 400);
@@ -118,7 +118,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 		this.btnDeleteItem = new JButton("Delete Item");
 		this.btnUpdateItem = new JButton("Update Item");
 		this.btnClear = new JButton("Clear");
-		this.btnViewItemDetails = new JButton("View Details");
+		//this.btnViewItemDetails = new JButton("View Details");
 
 	}
 
@@ -160,7 +160,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 		rightPanel.add(rightPanelBottom, BorderLayout.SOUTH);
 
 		leftPanelTop.add(this.menuScrollPane);
-		leftPanelBottom.add(this.btnViewItemDetails);
+		//leftPanelBottom.add(this.btnViewItemDetails);
 		
 		leftPanel.setLayout(new BorderLayout());
 		leftPanel.setBorder(BorderFactory.createTitledBorder("Menu"));
@@ -235,9 +235,10 @@ public class DbaScreen extends JFrame implements ActionListener {
 			UpdateItemButtonClicked();
 		} else if (e.getSource() == this.btnClear) {
 			ClearButtonClicked();
-		}else if (e.getSource() == this.btnViewItemDetails) {
-			ViewItemDetails();
 		}
+//		else if (e.getSource() == this.btnViewItemDetails) {
+//			ViewItemDetails();
+//		}
 		
 	}
 	
@@ -256,7 +257,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 		
 		float price;
 		try {
-			price = Float.parseFloat(this.txtPrice.getText());
+			price = Float.parseFloat(this.txtPrice.getText().trim());
 			if(!this.txtPrice.getText().trim().matches("^\\d+(\\.\\d{1,2})?$"))
 				throw new Exception();
 		}catch(Exception e) {
@@ -275,8 +276,6 @@ public class DbaScreen extends JFrame implements ActionListener {
 		String desc = this.textAreaDescription.getText().trim();
 			
 		String type = this.cmbType.getSelectedItem().toString();
-		
-		
 		MenuType menutype = MenuType.valueOf(type);
 
 		this.itemDetail = new ItemDetail(0, name, menutype, desc, price, 2, "",this.client.getMainUserId(), this.client.getMainUserType());
@@ -304,8 +303,8 @@ public class DbaScreen extends JFrame implements ActionListener {
 				throw new Exception();
 		}catch(Exception e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(this.txtPrice, "Invalid Number Format");
-			this.txtPrice.setText("");
+			JOptionPane.showMessageDialog(this.txtItemID, "Invalid Number Format");
+			this.txtItemID.setText("");
 			return;
 		}
 
@@ -341,17 +340,52 @@ public class DbaScreen extends JFrame implements ActionListener {
 
 	public void UpdateItemButtonClicked() {
 		System.out.println("UpdateItemButtonClicked");
-		
-		System.out.println("DeleteItemButtonClicked");
 
-		int itemID = Integer.parseInt(this.txtItemID.getText());
-		String name = this.txtName.getText();
-		float price = Float.parseFloat(this.txtPrice.getText());
-		String desc = this.textAreaDescription.getText();
+		int itemID;
+		try {
+			itemID = Integer.parseInt(this.txtItemID.getText().trim());
+			if(!this.txtItemID.getText().trim().matches("^\\d+$"))
+				throw new Exception();
+		}catch(Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this.txtItemID, "Invalid Number Format");
+			this.txtItemID.setText("");
+			return;
+		}
+		
+		String name="";
+		if(this.txtName.getText().trim()!=null && !this.txtName.getText().trim().equalsIgnoreCase("")) {
+			if(!this.txtName.getText().trim().matches("^[a-zA-Z0-9\\s-_]+$")) {
+				JOptionPane.showMessageDialog(this.txtName, "Invalid Name Format");//first parameter is the corresponding text field - parent component parameter for this method.
+				this.txtName.setText("");
+				return;
+			}
+			name = this.txtName.getText().trim();
+		}
+		
+		float price=0;
+		if(this.txtPrice.getText().trim()!=null && !this.txtPrice.getText().trim().equalsIgnoreCase("")) {
+			try {
+				price = Float.parseFloat(this.txtPrice.getText().trim());
+				if(!this.txtPrice.getText().trim().matches("^\\d+(\\.\\d{1,2})?$"))
+					throw new Exception();
+			}catch(Exception e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(this.txtPrice, "Invalid Number Format");
+				this.txtPrice.setText("");
+				return;
+			}
+		}
+		
+			
+		String desc="";
+		if(this.textAreaDescription.getText().trim()!=null && !this.textAreaDescription.getText().trim().equalsIgnoreCase("")) {
+			desc = this.textAreaDescription.getText().trim();
+		}
+		
 		String type = this.cmbType.getSelectedItem().toString();
 		MenuType menutype = MenuType.valueOf(type);
-		// TODO
-		// validation
+		
 
 		this.itemDetail = new ItemDetail(itemID, name, menutype, desc,price, 3, "",this.client.getMainUserId(), this.client.getMainUserType());
 		int option = JOptionPane.showConfirmDialog(null, "Are you sure you wish to update the menu item with Id = " + itemID, "Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -394,33 +428,33 @@ public class DbaScreen extends JFrame implements ActionListener {
 		
 	}
 	
-	public void ViewItemDetails() {
-		System.out.println("ViewItemDetails");
-		
-		int selectedItemRow = this.menuTable.getSelectedRow();
-		if(selectedItemRow!=-1) {
-			
-			//{ "Item ID", "Name", "Price", "Type", "Description" }
-			
-			int itemId = (int) this.tableModel.getValueAt(selectedItemRow, 0);
-			String name = (String) this.tableModel.getValueAt(selectedItemRow, 1);
-			float price = (float) this.tableModel.getValueAt(selectedItemRow, 2);
-			MenuType type = (MenuType) this.tableModel.getValueAt(selectedItemRow, 3);
-			String desc = (String) this.tableModel.getValueAt(selectedItemRow, 4);
-			
-			this.txtItemID.setText(String.valueOf(itemId));
-			this.txtName.setText(name);
-			this.txtPrice.setText(String.valueOf(price));
-			this.textAreaDescription.setText(desc);
-
-			String menutype = type.toString();
-			this.cmbType.setSelectedItem(menutype);
-			
-			
-		}else {
-			JOptionPane.showMessageDialog(this, "Please select an item from the menu to view its details");
-
-		}
-	}
+//	public void ViewItemDetails() {
+//		System.out.println("ViewItemDetails");
+//		
+//		int selectedItemRow = this.menuTable.getSelectedRow();
+//		if(selectedItemRow!=-1) {
+//			
+//			//{ "Item ID", "Name", "Price", "Type", "Description" }
+//			
+//			int itemId = (int) this.tableModel.getValueAt(selectedItemRow, 0);
+//			String name = (String) this.tableModel.getValueAt(selectedItemRow, 1);
+//			float price = (float) this.tableModel.getValueAt(selectedItemRow, 2);
+//			MenuType type = (MenuType) this.tableModel.getValueAt(selectedItemRow, 3);
+//			String desc = (String) this.tableModel.getValueAt(selectedItemRow, 4);
+//			
+//			this.txtItemID.setText(String.valueOf(itemId));
+//			this.txtName.setText(name);
+//			this.txtPrice.setText(String.valueOf(price));
+//			this.textAreaDescription.setText(desc);
+//
+//			String menutype = type.toString();
+//			this.cmbType.setSelectedItem(menutype);
+//			
+//			
+//		}else {
+//			JOptionPane.showMessageDialog(this, "Please select an item from the menu to view its details");
+//
+//		}
+//	}
 	
 }

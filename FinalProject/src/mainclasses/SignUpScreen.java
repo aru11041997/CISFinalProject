@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import pojo.User;
@@ -31,8 +32,8 @@ public class SignUpScreen extends JFrame implements ActionListener {
 	private JTextField txtUserName;
 	private JTextField txtFirstName;
 	private JTextField txtLastName;
-	private JTextField txtPassword;
-	private JTextField txtConfirmPassword;
+	private JPasswordField txtPassword;
+	private JPasswordField txtConfirmPassword;
 
 	private JLabel lblUserType;
 	private JComboBox cmbUserType;
@@ -70,8 +71,10 @@ public class SignUpScreen extends JFrame implements ActionListener {
 		this.txtFirstName = new JTextField(10);
 		this.txtLastName = new JTextField(10);
 		this.txtUserName = new JTextField(10);
-		this.txtPassword = new JTextField(10);
-		this.txtConfirmPassword = new JTextField(10);
+		this.txtPassword = new JPasswordField(10);
+		this.txtPassword.setEchoChar('*');
+		this.txtConfirmPassword = new JPasswordField(10);
+		this.txtConfirmPassword.setEchoChar('*');
 
 		this.btnSignUp = new JButton("Sign Up");
 
@@ -192,6 +195,10 @@ public class SignUpScreen extends JFrame implements ActionListener {
 			JOptionPane.showMessageDialog(null, "First name should be less than 45", null, JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
+		if(!firstname.matches("^[A-Z][a-z]+$")){
+			JOptionPane.showMessageDialog(null, "First name can only have alphabets", null, JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
 
 		String lastname = this.txtLastName.getText();
 		if (lastname.isBlank()) {
@@ -200,6 +207,10 @@ public class SignUpScreen extends JFrame implements ActionListener {
 		}
 		if (lastname.length() > 45) {
 			JOptionPane.showMessageDialog(null, "Last name should be less than 45", null, JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		if(!lastname.matches("^[A-Z][a-z]+$")){
+			JOptionPane.showMessageDialog(null, "Last name can only have alphabets", null, JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 
@@ -214,7 +225,9 @@ public class SignUpScreen extends JFrame implements ActionListener {
 		}
 
 		String password = this.txtPassword.getText();
+		System.out.println(password);
 		String confirmPassword = this.txtConfirmPassword.getText();
+		System.out.println(confirmPassword);
 
 		if (!password.equals(confirmPassword)) {
 			JOptionPane.showMessageDialog(null, "Password is not matching", null, JOptionPane.ERROR_MESSAGE);
