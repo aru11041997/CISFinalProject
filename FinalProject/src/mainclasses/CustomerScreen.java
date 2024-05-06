@@ -236,6 +236,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		this.setLayout(new BorderLayout());
 		this.add(top, BorderLayout.NORTH);
 		this.add(bottomGrid, BorderLayout.CENTER);
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
 	}
 
@@ -431,8 +432,10 @@ public class CustomerScreen extends JFrame implements ActionListener {
 				stringBuilder.append(detail.getName() + "\t" + detail.getPrice() + "\t" + detail.getQuantity() + "\n");
 			}
 			stringBuilder.append("\n Total Amount : " + order.getPrice());
-			final TextArea area = new TextArea(stringBuilder.toString());
-			JOptionPane.showMessageDialog(this, area, "Recipt", JOptionPane.INFORMATION_MESSAGE);
+			final TextArea area = new TextArea();
+			area.setEditable(false);
+			area.setText(stringBuilder.toString());
+			JOptionPane.showMessageDialog(this, area, "Receipt", JOptionPane.INFORMATION_MESSAGE);
 			clearCart();
 			loadMyOrders();
 			this.btnPlaceOrder.setVisible(false);

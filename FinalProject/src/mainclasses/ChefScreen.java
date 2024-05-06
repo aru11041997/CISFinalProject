@@ -5,20 +5,16 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
 import pojo.ItemDetail;
@@ -28,6 +24,10 @@ import utility.Constants.OrderStatus;
 
 public class ChefScreen extends JFrame implements ActionListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private DefaultTableModel placedOrdersModel;
 	private DefaultTableModel receivedOrdersModel;
 	private DefaultTableModel inProcessOrdersModel;
@@ -151,6 +151,7 @@ public class ChefScreen extends JFrame implements ActionListener {
 		this.setLayout(new BorderLayout());
 		this.add(top, BorderLayout.NORTH);
 		this.add(orderGrid, BorderLayout.CENTER);
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
 		
 	}
 

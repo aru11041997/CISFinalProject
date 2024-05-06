@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +24,13 @@ import pojo.ItemDetail;
 import pojo.User;
 import utility.Constants;
 import utility.Constants.MenuType;
-import utility.Constants.UserType;
 
 public class DbaScreen extends JFrame implements ActionListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JLabel lblName;
 	private JLabel lblType;
 	private JLabel lblDescription;
@@ -55,18 +56,18 @@ public class DbaScreen extends JFrame implements ActionListener {
 	private JButton btnUpdateItem;
 	private JButton btnDeleteItem;
 	private JButton btnClear;
-	//private JButton btnViewItemDetails;
+	// private JButton btnViewItemDetails;
 	private JButton btnLogout;
-	
 
 	Client client;
 	ItemDetail itemDetail;
 
-	public DbaScreen( Client client) {
+	public DbaScreen(Client client) {
 		System.out.println("DBA constructor");
 		this.client = client;
-		System.out.println("usr type - " + this.client.getMainUserType() + "; user id - " + this.client.getMainUserId());
-		
+		System.out
+				.println("usr type - " + this.client.getMainUserType() + "; user id - " + this.client.getMainUserId());
+
 		initializeUIComponents();
 		doTheLayout();
 
@@ -74,7 +75,7 @@ public class DbaScreen extends JFrame implements ActionListener {
 		this.btnUpdateItem.addActionListener(this);
 		this.btnDeleteItem.addActionListener(this);
 		this.btnClear.addActionListener(this);
-		//this.btnViewItemDetails.addActionListener(this);
+		// this.btnViewItemDetails.addActionListener(this);
 		this.btnLogout.addActionListener(this);
 
 		this.setTitle("DBA Screen - menu management");
@@ -116,14 +117,13 @@ public class DbaScreen extends JFrame implements ActionListener {
 		this.menuScrollPane = new JScrollPane(this.menuTable);
 		this.menuScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		this.menuScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		
 
 		this.btnAddItem = new JButton("Add Item");
 		this.btnDeleteItem = new JButton("Delete Item");
 		this.btnUpdateItem = new JButton("Update Item");
 		this.btnClear = new JButton("Clear");
 		this.btnLogout = new JButton("Logout");
-		//this.btnViewItemDetails = new JButton("View Details");
+		// this.btnViewItemDetails = new JButton("View Details");
 
 	}
 
@@ -166,8 +166,8 @@ public class DbaScreen extends JFrame implements ActionListener {
 		rightPanel.add(rightPanelBottom, BorderLayout.SOUTH);
 
 		leftPanelTop.add(this.menuScrollPane);
-		//leftPanelBottom.add(this.btnViewItemDetails);
-		
+		// leftPanelBottom.add(this.btnViewItemDetails);
+
 		leftPanel.setLayout(new BorderLayout());
 		leftPanel.setBorder(BorderFactory.createTitledBorder("Menu"));
 
@@ -177,42 +177,39 @@ public class DbaScreen extends JFrame implements ActionListener {
 		this.setLayout(new GridLayout(1, 2));
 		this.add(leftPanel);
 		this.add(rightPanel);
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
 	}
 
 	public String[] getMenuTypes() {
 		Constants.MenuType[] menuTypes = Constants.MenuType.values();
-		int length = menuTypes.length+1;
+		int length = menuTypes.length + 1;
 		String[] menuTypeStrings = new String[length];
-		menuTypeStrings[0]="";
+		menuTypeStrings[0] = "";
 		for (int i = 1; i < length; i++) {
-			menuTypeStrings[i] = menuTypes[i-1].toString();
+			menuTypeStrings[i] = menuTypes[i - 1].toString();
 		}
 		return menuTypeStrings;
 	}
 
-
-
-//	@SuppressWarnings("unchecked")
 	public List<ItemDetail> getMenuItems() {
 
 		List<ItemDetail> items = new ArrayList<>();
-		this.itemDetail = new ItemDetail(0, "", null, "", 0.0f, 1, "", this.client.getMainUserId(), this.client.getMainUserType());
-		//items = (List<ItemDetail>) this.client.performAction(this.itemDetail);
-		
+		this.itemDetail = new ItemDetail(0, "", null, "", 0.0f, 1, "", this.client.getMainUserId(),
+				this.client.getMainUserType());
+		// items = (List<ItemDetail>) this.client.performAction(this.itemDetail);
+
 		Object object = this.client.performAction(this.itemDetail);
 		if (object instanceof List<?>) {
 			List<?> itemList = (List<?>) object;
-			//System.out.println("object list size = " + itemList.size());
 			for (Object obj : itemList) {
 				if (obj instanceof ItemDetail) {
-					//System.out.println(obj.toString());
 					items.add((ItemDetail) obj);
 				}
 			}
 		}
-		
-		//items = getSampleItems();
+
+		// items = getSampleItems();
 		System.out.println("items list size = " + items.size());
 
 		return items;
@@ -248,53 +245,52 @@ public class DbaScreen extends JFrame implements ActionListener {
 //		else if (e.getSource() == this.btnViewItemDetails) {
 //			ViewItemDetails();
 //		}
-		
+
 	}
-	
 
 	public void AddItemButtonClicked() {
 		System.out.println("AddItemButtonClicked");
 
-		
-		
-		if(!this.txtName.getText().trim().matches("^[a-zA-Z0-9\\s-_]+$")) {
-			JOptionPane.showMessageDialog(this.txtName, "Invalid Name Format");//first parameter is the corresponding text field - parent component parameter for this method.
+		if (!this.txtName.getText().trim().matches("^[a-zA-Z0-9\\s-_]+$")) {
+			JOptionPane.showMessageDialog(this.txtName, "Invalid Name Format");// first parameter is the corresponding
+																				// text field - parent component
+																				// parameter for this method.
 			this.txtName.setText("");
 			return;
 		}
 		String name = this.txtName.getText().trim();
-		
+
 		float price;
 		try {
 			price = Float.parseFloat(this.txtPrice.getText().trim());
-			if(!this.txtPrice.getText().trim().matches("^\\d+(\\.\\d{1,2})?$"))
+			if (!this.txtPrice.getText().trim().matches("^\\d+(\\.\\d{1,2})?$"))
 				throw new Exception();
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this.txtPrice, "Invalid Number Format");
 			this.txtPrice.setText("");
 			return;
 		}
-		
-		
-		if(this.textAreaDescription.getText().trim()==null || this.textAreaDescription.getText().trim().equalsIgnoreCase("")) {
+
+		if (this.textAreaDescription.getText().trim() == null
+				|| this.textAreaDescription.getText().trim().equalsIgnoreCase("")) {
 			JOptionPane.showMessageDialog(this.textAreaDescription, "Please provide a small description");
 			this.textAreaDescription.setText("");
 			return;
 		}
 		String desc = this.textAreaDescription.getText().trim();
-			
+
 		String type = this.cmbType.getSelectedItem().toString();
 		MenuType menutype = null;
-		if(!(type.equals("") || type==null) ) {
-			 menutype = MenuType.valueOf(type);
-		}else {
+		if (!(type.equals("") || type == null)) {
+			menutype = MenuType.valueOf(type);
+		} else {
 			JOptionPane.showMessageDialog(this.cmbType, "Please select a type");
 			return;
 		}
-		
 
-		this.itemDetail = new ItemDetail(0, name, menutype, desc, price, 2, "",this.client.getMainUserId(), this.client.getMainUserType());
+		this.itemDetail = new ItemDetail(0, name, menutype, desc, price, 2, "", this.client.getMainUserId(),
+				this.client.getMainUserType());
 
 		this.itemDetail = (ItemDetail) this.client.performAction(this.itemDetail);
 
@@ -316,36 +312,38 @@ public class DbaScreen extends JFrame implements ActionListener {
 		int itemID;
 		try {
 			itemID = Integer.parseInt(this.txtItemID.getText().trim());
-			if(!this.txtItemID.getText().trim().matches("^\\d+$"))
+			if (!this.txtItemID.getText().trim().matches("^\\d+$"))
 				throw new Exception();
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this.txtItemID, "Invalid Number Format");
 			this.txtItemID.setText("");
 			return;
 		}
 
-		this.itemDetail = new ItemDetail(itemID, "", null, "", 0.0f, 4, "",this.client.getMainUserId(), this.client.getMainUserType());
-		int option = JOptionPane.showConfirmDialog(null, "Are you sure you wish to delete the menu item with Id = " + itemID, "Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		this.itemDetail = new ItemDetail(itemID, "", null, "", 0.0f, 4, "", this.client.getMainUserId(),
+				this.client.getMainUserType());
+		int option = JOptionPane.showConfirmDialog(null,
+				"Are you sure you wish to delete the menu item with Id = " + itemID, "Confirmation",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 		if (option == JOptionPane.YES_NO_OPTION) {
 			// proceed with deletion
 			this.itemDetail = (ItemDetail) this.client.performAction(this.itemDetail);
 
-			if(this.itemDetail!=null && this.itemDetail.getOptType()>0) {
-				
+			if (this.itemDetail != null && this.itemDetail.getOptType() > 0) {
+
 				System.out.println(this.itemDetail.getMessage());
-				
+
 				JOptionPane.showMessageDialog(null, "Delete Successful.");
-				
+
 				ClearButtonClicked();
-				//call clear text fields method.
+				// call clear text fields method.
 				updateMenuTable();
 			}
 		} else if (option == JOptionPane.NO_OPTION) {
 			// stop the deletion
 			System.out.println("deleted stopped");
-			
 
 		} else if (option == JOptionPane.CANCEL_OPTION) {
 			System.out.println("delete cancelled");
@@ -361,63 +359,67 @@ public class DbaScreen extends JFrame implements ActionListener {
 		int itemID;
 		try {
 			itemID = Integer.parseInt(this.txtItemID.getText().trim());
-			if(!this.txtItemID.getText().trim().matches("^\\d+$"))
+			if (!this.txtItemID.getText().trim().matches("^\\d+$"))
 				throw new Exception();
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this.txtItemID, "Please enter correct itemID");
 			this.txtItemID.setText("");
 			return;
 		}
-		
-		String name="";
-		if(this.txtName.getText().trim()!=null && !this.txtName.getText().trim().equalsIgnoreCase("")) {
-			if(!this.txtName.getText().trim().matches("^[a-zA-Z0-9\\s-_]+$")) {
-				JOptionPane.showMessageDialog(this.txtName, "Invalid Name Format");//first parameter is the corresponding text field - parent component parameter for this method.
+
+		String name = "";
+		if (this.txtName.getText().trim() != null && !this.txtName.getText().trim().equalsIgnoreCase("")) {
+			if (!this.txtName.getText().trim().matches("^[a-zA-Z0-9\\s-_]+$")) {
+				JOptionPane.showMessageDialog(this.txtName, "Invalid Name Format");// first parameter is the
+																					// corresponding text field - parent
+																					// component parameter for this
+																					// method.
 				this.txtName.setText("");
 				return;
 			}
 			name = this.txtName.getText().trim();
 		}
-		
-		float price=0;
-		if(this.txtPrice.getText().trim()!=null && !this.txtPrice.getText().trim().equalsIgnoreCase("")) {
+
+		float price = 0;
+		if (this.txtPrice.getText().trim() != null && !this.txtPrice.getText().trim().equalsIgnoreCase("")) {
 			try {
 				price = Float.parseFloat(this.txtPrice.getText().trim());
-				if(!this.txtPrice.getText().trim().matches("^\\d+(\\.\\d{1,2})?$"))
+				if (!this.txtPrice.getText().trim().matches("^\\d+(\\.\\d{1,2})?$"))
 					throw new Exception();
-			}catch(Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(this.txtPrice, "Invalid Number Format");
 				this.txtPrice.setText("");
 				return;
 			}
 		}
-		
-			
-		String desc="";
-		if(this.textAreaDescription.getText().trim()!=null && !this.textAreaDescription.getText().trim().equalsIgnoreCase("")) {
+
+		String desc = "";
+		if (this.textAreaDescription.getText().trim() != null
+				&& !this.textAreaDescription.getText().trim().equalsIgnoreCase("")) {
 			desc = this.textAreaDescription.getText().trim();
 		}
-		
+
 		String type = this.cmbType.getSelectedItem().toString();
 		MenuType menutype = null;
-		if(!(type.equals("") || type==null)) {
-			 menutype = MenuType.valueOf(type);
+		if (!(type.equals("") || type == null)) {
+			menutype = MenuType.valueOf(type);
 		}
-		
 
 		System.out.println("item id =" + itemID);
 		System.out.println("item name =" + name);
 		System.out.println("item price =" + price);
 		System.out.println("item desc =" + desc);
-		
-		if(name.equals("") && price==0 && desc.equals("") && menutype==null) {
-			JOptionPane.showMessageDialog(this, "Plese enter a new value for either Name, Price Description or MenuType to update");
+
+		if (name.equals("") && price == 0 && desc.equals("") && menutype == null) {
+			JOptionPane.showMessageDialog(this,
+					"Plese enter a new value for either Name, Price Description or MenuType to update");
 			return;
 		}
 
-		//this.itemDetail = new ItemDetail(itemID, name, menutype, desc,price, 3, "",this.client.getMainUserId(), this.client.getMainUserType());
+		// this.itemDetail = new ItemDetail(itemID, name, menutype, desc,price, 3,
+		// "",this.client.getMainUserId(), this.client.getMainUserType());
 		this.itemDetail = new ItemDetail();
 		this.itemDetail.setItemId(itemID);
 		this.itemDetail.setPrice(price);
@@ -427,28 +429,29 @@ public class DbaScreen extends JFrame implements ActionListener {
 		this.itemDetail.setOptType(3);
 		this.itemDetail.setMainUserId(this.client.getMainUserId());
 		this.itemDetail.setMainUserType(this.client.getMainUserType());
-		
-		int option = JOptionPane.showConfirmDialog(null, "Are you sure you wish to update the menu item with Id = " + itemID, "Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+		int option = JOptionPane.showConfirmDialog(null,
+				"Are you sure you wish to update the menu item with Id = " + itemID, "Confirmation",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 		if (option == JOptionPane.YES_NO_OPTION) {
 			// proceed with deletion
 			this.itemDetail = (ItemDetail) this.client.performAction(this.itemDetail);
 
-			if(this.itemDetail!=null && this.itemDetail.getOptType()>0) {
-				
+			if (this.itemDetail != null && this.itemDetail.getOptType() > 0) {
+
 				System.out.println(this.itemDetail.getMessage());
-				
+
 				JOptionPane.showMessageDialog(null, "Update Successful.");
-				
-				
-				//call clear text fields method.
+
+				// call clear text fields method.
 				ClearButtonClicked();
-				
+
 				updateMenuTable();
 			}
 		} else if (option == JOptionPane.NO_OPTION) {
 			// stop the deletion
-			System.out.println("update stopped");		
+			System.out.println("update stopped");
 
 		} else if (option == JOptionPane.CANCEL_OPTION) {
 			System.out.println("update cancelled");
@@ -459,38 +462,37 @@ public class DbaScreen extends JFrame implements ActionListener {
 
 	public void ClearButtonClicked() {
 		System.out.println("ClearButtonClicked");
-		
+
 		this.txtItemID.setText("");
 		this.txtName.setText("");
 		this.txtPrice.setText("");
 		this.textAreaDescription.setText("");
 		this.cmbType.setSelectedIndex(0);
-		
+
 	}
-	
+
 	public void LogoutSession() {
-		
+
 		System.out.println("LogoutSession");
-		
+
 		User user = new User();
 		user.setOptType(3);
 		user.setMainUserId(this.client.getMainUserId());
 		user.setMainUserType(this.client.getMainUserType());
-		
+
 		user = (User) this.client.performAction(user);
-		
-		if(user!=null && user.getOptType()>0) {
+
+		if (user != null && user.getOptType() > 0) {
 			System.out.println("logout successful");
 			HomeScreen hs = new HomeScreen(this.client);
 			hs.setVisible(true);
 			dispose();
-		}else {
+		} else {
 			JOptionPane.showMessageDialog(this, "logout failed");
 		}
-		
-		
+
 	}
-	
+
 //	public void ViewItemDetails() {
 //		System.out.println("ViewItemDetails");
 //		
@@ -519,5 +521,5 @@ public class DbaScreen extends JFrame implements ActionListener {
 //
 //		}
 //	}
-	
+
 }
