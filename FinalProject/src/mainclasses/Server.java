@@ -89,7 +89,6 @@ public class Server {
 
 		/** Run a thread */
 		public void run() {
-
 			// write the code to call a proper method to process the client request
 			try {
 				final ObjectInputStream inputFromClient = new ObjectInputStream(socket.getInputStream());
@@ -175,8 +174,12 @@ public class Server {
 						break;
 
 					case 5:
-						order = orderDoa.updateOrder(conn, order);
+						order = orderDoa.updateStatus(conn, order);
 						object = order;
+						break;
+					case 6:
+						final List<Order> orders2 = orderDoa.getOrdersForChef(conn, order);
+						object = orders2;
 						break;
 					}
 				}
