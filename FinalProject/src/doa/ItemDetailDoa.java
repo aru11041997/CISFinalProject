@@ -79,11 +79,7 @@ public class ItemDetailDoa {
 			setFields.add("description = ?");
 		}
 
-<<<<<<< HEAD
 		if (menu.getPrice() > 0.0f) {
-=======
-		if (!(menu.getPrice() == 0)) {
->>>>>>> main
 			setFields.add("price = ?");
 		}
 
@@ -109,11 +105,7 @@ public class ItemDetailDoa {
 				index++;
 			}
 
-<<<<<<< HEAD
 			if (menu.getPrice() > 0.0f) {
-=======
-			if (!(menu.getPrice() == 0)) {
->>>>>>> main
 				preparedStatement.setFloat(index, menu.getPrice());
 				index++;
 			}
