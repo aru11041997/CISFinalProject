@@ -11,6 +11,7 @@ import java.util.List;
 import doa.ItemDetailDoa;
 import doa.OrderDoa;
 import doa.PaymentDoa;
+import doa.SessionDoa;
 import doa.UserDoa;
 import pojo.ItemDetail;
 import pojo.Order;
@@ -29,6 +30,7 @@ public class Server {
 	private final ItemDetailDoa itemDetailDoa;
 	private final OrderDoa orderDoa;
 	private final PaymentDoa paymentDoa;
+	private final SessionDoa sessionDoa;
 
 	Server(final int port) {
 		this.port = port;
@@ -38,6 +40,7 @@ public class Server {
 		itemDetailDoa = new ItemDetailDoa();
 		orderDoa = new OrderDoa();
 		paymentDoa = new PaymentDoa();
+		sessionDoa = new SessionDoa();
 
 		//
 		initialize();
@@ -104,6 +107,7 @@ public class Server {
 
 					case 2:
 						user = userDoa.login(conn, user, hashCode);
+						sessionDoa.addSession(conn, user.getUserId());
 						object = user;
 						break;
 					}
@@ -111,76 +115,81 @@ public class Server {
 
 				if (object instanceof ItemDetail) {
 					ItemDetail menu = (ItemDetail) object;
-					switch (menu.getOptType()) {
-					case 1:
-						final List<ItemDetail> menus = itemDetailDoa.getAllItem(conn, menu);
-						object = menus;
-						break;
+					if (sessionDoa.validateSession(conn, menu.getMainUserId(), menu.getMainUserType())) {
+						switch (menu.getOptType()) {
+						case 1:
+							final List<ItemDetail> menus = itemDetailDoa.getAllItem(conn, menu);
+							object = menus;
+							break;
 
-					case 2:
-						menu = itemDetailDoa.addItem(conn, menu);
-						object = menu;
-						break;
+						case 2:
+							menu = itemDetailDoa.addItem(conn, menu);
+							object = menu;
+							break;
 
-					case 3:
-						menu = itemDetailDoa.updateItem(conn, menu);
-						object = menu;
-						break;
+						case 3:
+							menu = itemDetailDoa.updateItem(conn, menu);
+							object = menu;
+							break;
 
-					case 4:
-						menu = itemDetailDoa.deleteItem(conn, menu);
+						case 4:
+							menu = itemDetailDoa.deleteItem(conn, menu);
+							object = menu;
+							break;
+						}
+					} else {
+						menu.setOptType(-6);
 						object = menu;
-						break;
 					}
 				}
 
 				if (object instanceof Order) {
 					Order order = (Order) object;
-					switch (order.getOptType()) {
-					case 1:
-						final List<Order> orders = orderDoa.getAllOrder(conn, order);
-						object = orders;
-						break;
+					if (sessionDoa.validateSession(conn, order.getMainUserId(), order.getMainUserType())) {
+						switch (order.getOptType()) {
+						case 1:
+							final List<Order> orders = orderDoa.getAllOrder(conn, order);
+							object = orders;
+							break;
 
-					case 2: // place order
-						if (cardValidation.aValidNumber(order.getCardNumber())) {
-							order = orderDoa.addOrder(conn, order);
-							final Payment payment = new Payment();
-							payment.setOrderId(order.getOrderId());
-							final float amount = order.getPrice(); //(float) order.getItemDetails().stream()
-									//.mapToDouble(ItemDetail::getPrice).sum();
-							payment.setAmount(amount);
-							paymentDoa.insertPayment(conn, payment);
+						case 2: // place order
+							if (cardValidation.aValidNumber(order.getCardNumber())) {
+								order = orderDoa.addOrder(conn, order);
+								final Payment payment = new Payment();
+								payment.setOrderId(order.getOrderId());
+								final float amount = order.getPrice();
+								payment.setAmount(amount);
+								paymentDoa.insertPayment(conn, payment);
+							}
+							object = order;
+							break;
+
+						case 3:
+							if (cardValidation.aValidNumber(order.getCardNumber())) {
+								order = orderDoa.updateOrder(conn, order);
+								final Payment payment = new Payment();
+								payment.setOrderId(order.getOrderId());
+								final float amount = order.getPrice();
+								payment.setAmount(amount);
+								paymentDoa.updatePayment(conn, payment);
+							}
+							object = order;
+							break;
+
+						case 4:
+							order = orderDoa.deleteOrder(conn, order);
+							object = order;
+							break;
+
+						case 5:
+							order = orderDoa.updateStatus(conn, order);
+							object = order;
+							break;
 						}
+					} else {
+						order.setOptType(-6);
 						object = order;
-						break;
 
-					case 3:
-						//if (cardValidation.aValidNumber(order.getCardNumber())) {
-							order = orderDoa.updateOrder(conn, order);
-							final Payment payment = new Payment();
-							payment.setOrderId(order.getOrderId());
-							final float amount = order.getPrice(); // (float) order.getItemDetails().stream()
-									//.mapToDouble(ItemDetail::getPrice).sum();
-							payment.setAmount(amount);
-							paymentDoa.updatePayment(conn, payment);
-						//}
-						object = order;
-						break;
-
-					case 4:
-						order = orderDoa.deleteOrder(conn, order);
-						object = order;
-						break;
-
-					case 5:
-						order = orderDoa.updateStatus(conn, order);
-						object = order;
-						break;
-					case 6:
-						final List<Order> orders2 = orderDoa.getOrdersForChef(conn, order);
-						object = orders2;
-						break;
 					}
 				}
 
