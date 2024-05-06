@@ -12,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -106,7 +108,17 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		this.setLocationRelativeTo(null); // Center the window
 
 		displayMenu();
-		loadMyOrders();
+
+		Timer timer = new Timer();
+
+		// Schedule the task to fetch orders every 2 minutes
+		timer.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				loadMyOrders();
+			}
+		}, 0, 2 * 60 * 1000); // Delay in milliseconds (0), period in milliseconds (2 minutes * 60 seconds *
+								// 1000 milliseconds)
 
 		this.selectedItems = new ArrayList<ItemDetail>();
 
