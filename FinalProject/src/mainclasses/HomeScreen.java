@@ -149,7 +149,7 @@ public class HomeScreen extends JFrame implements ActionListener {
 				System.out.println("Message = " + this.user.getMessage());
 				
 				UserType uType = this.user.getUserType();
-				System.out.println(uType.toString());
+				//System.out.println(uType.toString());
 				
 				if(uType.equals(UserType.ADMIN)) {
 					DbaScreen dbaScreen = new DbaScreen( this.client);
