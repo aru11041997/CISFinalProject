@@ -4,23 +4,23 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.sql.Timestamp;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -28,8 +28,6 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -38,17 +36,14 @@ import pojo.ItemDetail;
 import pojo.Order;
 import pojo.User;
 import utility.CardValidation;
-import utility.Constants.MenuType;
 import utility.Constants.OrderStatus;
 
 public class CustomerScreen extends JFrame implements ActionListener {
 
-	// private DefaultListModel<ItemDetail> menuListModel;
-	// private DefaultListModel<ItemDetail> selectedItemsListModel;
-
-	// private JList<ItemDetail> menuList;
-	// private JList<ItemDetail> selectedItemsList;
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JScrollPane menuScrollPane;
 	private JScrollPane selectedItemsScrollPane;
 	private JScrollPane ordersScrollPane;
@@ -130,8 +125,6 @@ public class CustomerScreen extends JFrame implements ActionListener {
 	}
 
 	public void initializeUIComponents() {
-//		this.menuListModel = new DefaultListModel<>();
-//		this.menuList = new JList<>(this.menuListModel);
 
 		this.menuTableModel = new DefaultTableModel(new Object[] { "Item", "Type", "Price", "Description" }, 0);
 		this.menuTable = new JTable(this.menuTableModel);
@@ -143,16 +136,10 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		this.menuTable.getColumnModel().getColumn(0).setCellRenderer(new TopAlignTableCellRenderer());
 		this.menuTable.getColumnModel().getColumn(1).setCellRenderer(new TopAlignTableCellRenderer());
 		this.menuTable.getColumnModel().getColumn(2).setCellRenderer(new TopAlignTableCellRenderer());
-		// this.menuTable.getColumnModel().getColumn(3).setCellRenderer(new
-		// TopAlignTableCellRenderer());
 
 		this.menuScrollPane = new JScrollPane(this.menuTable);
-		// this.menuScrollPane.setPreferredSize(new Dimension(300, 300));
 		this.menuScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		this.menuScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
-		// this.selectedItemsListModel = new DefaultListModel<>();
-		// this.selectedItemsList = new JList<>(this.selectedItemsListModel);
 
 		this.selectedItemTableModel = new DefaultTableModel(new Object[] { "Item", "Quantity", "Price Per Unit" }, 0);
 		this.selectedItemTable = new JTable(this.selectedItemTableModel);
@@ -330,7 +317,6 @@ public class CustomerScreen extends JFrame implements ActionListener {
 			ItemDetail selectedItem = this.menuItems.get(selectedItemRow);
 			if (selectedItem != null) {
 
-				// System.out.println("selected item =" + selectedItem.getName());
 				int quantity = Integer.parseInt(this.txtQuantity.getText());
 				selectedItem.setQuantity(quantity);
 
@@ -343,12 +329,7 @@ public class CustomerScreen extends JFrame implements ActionListener {
 				this.totalAmount += (selectedItem.getPrice() * quantity);
 				this.lblTotal.setText("Total: $" + totalAmount);
 
-				// System.out.println("selected item === " + selectedItem.toString());
 				this.selectedItems.add(selectedItem);
-
-//				for(int i=0;i<this.selectedItems.size();i++) {				
-//					System.out.println(this.selectedItems.get(i).toString());	
-//				}
 			}
 		} else {
 			JOptionPane.showMessageDialog(this, "Please select an item from the menu.");
@@ -361,7 +342,6 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		System.out.println("deleteSelectedItemFromCart");
 
 		int selectedItemRow = this.selectedItemTable.getSelectedRow();
-		// System.out.println("selectedItemRow = " +selectedItemRow);
 		if (selectedItemRow != -1) {
 
 			int numColumns = this.selectedItemTableModel.getColumnCount();
@@ -457,6 +437,14 @@ public class CustomerScreen extends JFrame implements ActionListener {
 			System.out.println("Message = " + this.order.getMessage());
 			System.out.println("order id = " + this.order.getOrderId());
 			JOptionPane.showMessageDialog(this, "Order Placed. Your unique order id = " + this.order.getOrderId());
+
+			StringBuilder stringBuilder = new StringBuilder();
+			for (final ItemDetail detail : selectedItems) {
+				stringBuilder.append(detail.getName() + "\t" + detail.getPrice() + "\t" + detail.getQuantity() + "\n");
+			}
+			stringBuilder.append("\n Total Amount : " + order.getPrice());
+			final TextArea area = new TextArea(stringBuilder.toString());
+			JOptionPane.showMessageDialog(this, area, "Recipt", JOptionPane.INFORMATION_MESSAGE);
 			clearCart();
 			loadMyOrders();
 			this.btnPlaceOrder.setVisible(false);
@@ -485,7 +473,6 @@ public class CustomerScreen extends JFrame implements ActionListener {
 
 	}
 
-//	@SuppressWarnings("unchecked")
 	public List<ItemDetail> getMenuItems() {
 
 		List<ItemDetail> items = new ArrayList<>();
@@ -508,7 +495,6 @@ public class CustomerScreen extends JFrame implements ActionListener {
 	}
 
 	public void loadMyOrders() {
-		// this.menuItems = new ArrayList<>();
 
 		this.myOrders = getMyOrders();
 		this.ordersTableModel.setRowCount(0);
@@ -525,12 +511,10 @@ public class CustomerScreen extends JFrame implements ActionListener {
 		}
 	}
 
-//	@SuppressWarnings("unchecked")
 	public List<Order> getMyOrders() {
 		List<Order> ordersList = new ArrayList<Order>();
 		Order orderobj = new Order();
 		orderobj.setOptType(1);
-		// TODO - set user id
 		orderobj.setUserId(this.client.getMainUserId());
 		orderobj.setMainUserId(this.client.getMainUserId());
 		orderobj.setMainUserType(this.client.getMainUserType());
@@ -714,6 +698,11 @@ public class CustomerScreen extends JFrame implements ActionListener {
 }
 
 class MultiLineTableCellRenderer extends JTextArea implements TableCellRenderer {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public MultiLineTableCellRenderer() {
 		setLineWrap(true);
 		setWrapStyleWord(true);
@@ -738,6 +727,11 @@ class MultiLineTableCellRenderer extends JTextArea implements TableCellRenderer 
 }
 
 class TopAlignTableCellRenderer extends DefaultTableCellRenderer {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 			int row, int column) {
 		Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
