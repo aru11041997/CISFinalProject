@@ -7,7 +7,6 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 
-import pojo.User;
 import utility.Constants.UserType;
 
 public class SessionDoa {

@@ -110,14 +110,14 @@ public class Server {
 						sessionDoa.addSession(conn, user.getUserId());
 						object = user;
 						break;
-					
+
 					case 3:
-						//logout
+						// logout
 						int userId = user.getMainUserId();
 						boolean logout = sessionDoa.updateSession(conn, userId);
-						if(logout) {
+						if (logout) {
 							user.setMessage("logout successful");
-						}else {
+						} else {
 							user.setMessage("logout fail");
 							user.setOptType(-3);
 						}
@@ -181,14 +181,12 @@ public class Server {
 							break;
 
 						case 3:
-//							if (cardValidation.aValidNumber(order.getCardNumber())) {
-								order = orderDoa.updateOrder(conn, order);
-								final Payment payment = new Payment();
-								payment.setOrderId(order.getOrderId());
-								final float amount = order.getPrice();
-								payment.setAmount(amount);
-								paymentDoa.updatePayment(conn, payment);
-//							}
+							order = orderDoa.updateOrder(conn, order);
+							final Payment payment = new Payment();
+							payment.setOrderId(order.getOrderId());
+							final float amount = order.getPrice();
+							payment.setAmount(amount);
+							paymentDoa.updatePayment(conn, payment);
 							object = order;
 							break;
 
@@ -201,7 +199,7 @@ public class Server {
 							order = orderDoa.updateStatus(conn, order);
 							object = order;
 							break;
-							
+
 						case 6:
 							final List<Order> orders2 = orderDoa.getOrdersForChef(conn, order);
 							object = orders2;
