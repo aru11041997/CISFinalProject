@@ -6,6 +6,10 @@ import java.util.List;
 import utility.Constants.OrderStatus;
 
 public class Order extends BaseAttributes {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<ItemDetail> itemDetails;
 	private int userId;
 	private int orderId;

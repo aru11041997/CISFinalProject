@@ -5,6 +5,10 @@ import java.io.Serializable;
 import utility.Constants.UserType;
 
 public class BaseAttributes implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int optType;
 	private String message;
 	private int mainUserId;

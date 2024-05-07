@@ -1,6 +1,10 @@
 package pojo;
 
 public class Payment extends BaseAttributes {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int payId;
 	private int orderId;
 	private float amount;

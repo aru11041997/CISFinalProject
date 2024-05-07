@@ -6,6 +6,10 @@ import utility.Constants.MenuType;
 import utility.Constants.UserType;
 
 public class ItemDetail extends BaseAttributes implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int itemId;
 	private String name;
 	private MenuType menuType;
